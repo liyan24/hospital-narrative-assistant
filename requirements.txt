@@ -1,0 +1,36 @@
+# 后端 API
+fastapi
+uvicorn[standard]
+python-multipart
+
+# 前端
+streamlit
+streamlit-echarts
+matplotlib
+
+# 数据库
+pymysql
+sqlalchemy
+chromadb
+neo4j
+
+# 大模型 (OpenAI兼容)
+openai
+langchain
+langchain-openai
+langchain-community
+
+# 文档生成
+python-docx
+reportlab
+
+# 工具
+python-dotenv
+pydantic
+pydantic-settings
+pandas
+numpy
+requests
+
+# 向量处理 (用于RAG)
+sentence-transformers

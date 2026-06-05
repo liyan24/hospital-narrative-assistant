@@ -1,0 +1,242 @@
+# 医院叙事生成助手 - Hospital Narrative Assistant
+
+基于**大语言模型（LLM）**与**Neo4j医疗知识图谱**双引擎驱动的医院科室历史数据智能分析与叙事生成平台。
+
+为科室管理者与临床医生提供从**数据统计分析**到**深度医疗叙事**的完整智能辅助能力。
+
+---
+
+## 🎯 核心能力
+
+### 📊 一、统计分析与报告
+基于Excel原始数据进行多维度统计分析，结合大模型自动生成结构化报告。
+
+| 功能 | 说明 |
+|------|------|
+| **数据概览** | 整合入院/出院/检查/检验/手术等多源数据，ECharts交互式图表展示 |
+| **智能报告生成** | LLM驱动，自动生成科室数据分析报告（Word/PDF导出） |
+| **每周临床简报** | 按周聚合运营数据，自动生成7大模块周简报 |
+| **文档导出** | 支持 DOCX / PDF 一键导出 |
+
+### 🧠 二、知识图谱叙事
+构建患者-就诊-疾病-药品-检查-手术等多实体医疗知识图谱，挖掘深层关联模式。
+
+| 功能 | 说明 |
+|------|------|
+| **患者故事线** | 输入患者ID，基于图谱就诊链条生成完整就诊故事线 |
+| **诊疗路径** | 挖掘"疾病→常用药品→常规检查→手术"的典型路径 |
+| **合并症分析** | 基于二阶关系发现常见合并症组合与三元疾病组合 |
+| **用药模式** | 分析药品共现网络，识别中西医结合用药特点 |
+| **再入院分析** | 识别多次就诊患者，生成纵向医疗叙事 |
+| **RAG问答** | LLM基于图谱真实子图回答医疗问题，避免"编造" |
+| **图谱可视化** | ECharts力导向图展示患者子图、疾病关联、药品联用 |
+| **中医特色** | 证型-用药关联、中西医结合对比、证型分布趋势 |
+| **质控异常** | 缺失必要检查、住院天数异常、30天再入院、诊断-药品不匹配、药物相互作用 |
+| **科室运营** | 多周期运营指标对比（病种、用药、合并症、中西医结合占比等） |
+| **相似患者** | 基于图谱共同邻居算法（Jaccard）计算患者相似度，推荐参考病例 |
+| **风险预警** | 多因素风险评分（就诊频率、多病共存、住院天数、年龄、恶性肿瘤等） |
+
+---
+
+## 🏗️ 技术栈
+
+- **前端**: Streamlit
+- **后端**: FastAPI + Uvicorn
+- **知识图谱**: Neo4j (32,694 节点 / 788,119 关系)
+- **数据库**: MySQL (结构化数据) + ChromaDB (向量检索) + JSON文件存储
+- **大模型**: OpenAI API 兼容接口
+- **文档生成**: python-docx
+- **数据可视化**: ECharts (streamlit-echarts)
+
+---
+
+## 🚀 快速开始
+
+### 1. 环境准备
+
+```bash
+# 克隆仓库
+git clone https://github.com/liyan24/hospital-narrative-assistant.git
+cd hospital-narrative-assistant
+
+# 创建虚拟环境
+python -m venv .venv
+.venv\Scripts\activate  # Windows
+# source .venv/bin/activate  # Linux/Mac
+```
+
+### 2. 安装依赖
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3. 配置环境变量
+
+复制 `.env.example` 为 `.env`，填写实际配置：
+
+```bash
+cp .env.example .env
+```
+
+关键配置项：
+- `OPENAI_API_KEY` / `OPENAI_BASE_URL` / `OPENAI_MODEL` — 大模型接口
+- `NEO4J_URI` / `NEO4J_USER` / `NEO4J_PASSWORD` — Neo4j连接
+
+### 4. 启动服务
+
+```bash
+# 终端1：启动后端 API (http://localhost:8000)
+python main.py
+
+# 终端2：启动前端 (http://localhost:8501)
+streamlit run streamlit_app.py
+```
+
+### 5. 构建知识图谱（首次运行）
+
+进入前端页面 **⚙️ 知识图谱管理** → 点击「构建知识图谱」按钮，或调用API：
+
+```bash
+curl -X POST http://localhost:8000/api/kg/build \
+  -H "Content-Type: application/json" \
+  -d '{"clear": false}'
+```
+
+---
+
+## 📁 项目结构
+
+```
+hospital-narrative-assistant/
+├── main.py                          # FastAPI 主入口
+├── streamlit_app.py                 # Streamlit 前端
+├── config.py                        # 配置管理
+├── requirements.txt                 # Python 依赖
+├── .env / .env.example              # 环境变量
+│
+├── database/                        # 数据库模块
+│   ├── neo4j_client.py              # Neo4j 连接
+│   ├── mysql_client.py              # MySQL 连接
+│   ├── vector_store.py              # ChromaDB 向量存储
+│   └── json_store.py                # JSON 文件存储
+│
+├── models/
+│   └── schemas.py                   # Pydantic 数据模型
+│
+├── services/                        # 业务服务层
+│   ├── llm_service.py               # 大模型通用接口
+│   ├── narrative_service.py         # 统计报告叙事
+│   ├── data_analysis_service.py     # 数据分析
+│   ├── chart_service.py             # ECharts 图表生成
+│   ├── document_service.py          # Word/PDF 导出
+│   ├── weekly_analysis_service.py   # 周简报分析
+│   ├── weekly_narrative_service.py  # 周简报叙事
+│   ├── weekly_document_service.py   # 周简报导出
+│   ├── knowledge_graph_service.py   # 知识图谱构建
+│   ├── kg_data_cleaner.py           # 数据清洗（疾病/药品标准化）
+│   ├── patient_narrative_service.py # P0: 患者故事线
+│   ├── pathway_narrative_service.py # P0: 诊疗路径
+│   ├── comorbidity_service.py       # P1: 合并症分析
+│   ├── drug_pattern_service.py      # P1: 用药模式
+│   ├── readmission_service.py       # P1: 再入院分析
+│   ├── kg_rag_service.py            # P1: 图谱RAG问答
+│   ├── kg_visual_service.py         # P1: 图谱可视化数据
+│   ├── tcm_narrative_service.py     # P2: 中医特色叙事
+│   ├── quality_control_service.py   # P2: 质控异常
+│   ├── department_operation_service.py  # P2: 科室运营
+│   ├── similar_patient_service.py   # P2: 相似患者推荐
+│   └── risk_prediction_service.py   # P2: 风险预警
+│
+├── routers/                         # API 路由
+│   ├── data.py                      # 数据管理 / 健康检查
+│   ├── narrative.py                 # 叙事生成（全部P0/P1/P2接口）
+│   ├── document.py                  # 文档导出
+│   ├── weekly.py                    # 周简报
+│   └── knowledge_graph.py           # 知识图谱构建/查询/统计
+│
+├── utils/                           # 工具函数
+│   └── helpers.py
+│
+├── data/                            # 数据目录
+│   ├── json_store/                  # JSON 缓存
+│   ├── kg_cleaned/                  # 清洗后数据缓存
+│   └── outputs/                     # 报告输出目录
+│
+└── output/                          # 示例输出文档
+```
+
+---
+
+## 📡 API 文档
+
+启动后端后访问：
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+
+### 主要接口分组
+
+| 前缀 | 功能 |
+|------|------|
+| `GET /health` | 服务健康检查 |
+| `/api/data/...` | 数据分析、统计图表 |
+| `/api/narrative/...` | 全部叙事生成接口（报告、患者故事线、诊疗路径、合并症、用药、再入院、RAG、中医、质控、运营、相似患者、风险预警） |
+| `/api/document/...` | 报告导出（DOCX/PDF） |
+| `/api/weekly/...` | 周简报分析与导出 |
+| `/api/kg/...` | 知识图谱构建、统计、Cypher查询、子图可视化 |
+
+---
+
+## 📈 知识图谱规模（示例数据）
+
+基于肿瘤血液科真实脱敏数据构建：
+
+| 类型 | 数量 |
+|------|------|
+| 患者 (Patient) | 3,989 |
+| 就诊 (Visit) | 13,743 |
+| 西医疾病 (Disease::western) | 1,596 |
+| 中医病名/证型 (Disease::tcm) | 1,391 |
+| 药品 (Drug) | 3,888 |
+| 检查 (Exam) | 69 |
+| 手术 (Surgery) | 58 |
+| 主诉 (ChiefComplaint) | 5,778 |
+| **关系总数** | **788,119** |
+
+---
+
+## 🗺️ 功能路线图 Roadmap
+
+### 🔥 P0 - 高优先级
+- [x] **个体患者故事线生成**
+- [x] **诊疗路径模式叙事**
+
+### ⚡ P1 - 中优先级
+- [x] **疾病共现网络叙事**
+- [x] **用药模式与合理性叙事**
+- [x] **LLM + 知识图谱 RAG**
+- [x] **交互式图谱探索**
+- [x] **再入院患者时间线叙事**
+
+### 🌟 P2 - 长期方向
+- [x] **中医特色叙事增强**
+- [x] **质控异常叙事**
+- [x] **科室运营深度叙事**
+- [x] **相似患者推荐**
+- [x] **预测性叙事 / 风险预警**
+
+**全部 12 个功能方向已开发完成 ✅**
+
+---
+
+## 📝 开发说明
+
+本项目为持续迭代的医院科室数据智能辅助平台。当前版本已完成从基础统计分析到深度知识图谱叙事的完整能力闭环。
+
+如需扩展新功能，可在 `services/` 目录下新增服务，在 `routers/narrative.py` 中注册API，并在 `streamlit_app.py` 中添加前端页面。
+
+---
+
+## 📄 License
+
+MIT License

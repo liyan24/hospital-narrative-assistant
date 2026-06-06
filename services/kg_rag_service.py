@@ -3,7 +3,7 @@ LLM + 知识图谱 RAG 问答服务
 基于Neo4j检索真实关系子图，避免LLM编造
 """
 import re
-from typing import Optional
+from typing import List, Optional
 
 from database.neo4j_client import neo4j_client
 from services.llm_service import llm_service
@@ -128,19 +128,41 @@ class KGRAGService:
                     return candidate
         return None
 
+    def _resolve_disease_names(self, keyword: str) -> List[str]:
+        """通过CONTAINS模糊查询，将关键词解析为图谱中实际存在的疾病名列表"""
+        records = neo4j_client.run("""
+            MATCH (d:Disease)
+            WHERE d.name CONTAINS $keyword
+            RETURN d.name AS name
+            LIMIT 50
+        """, {"keyword": keyword})
+        names = [r["name"] for r in records if r["name"]]
+        # 去重并保持顺序
+        seen = set()
+        unique = []
+        for n in names:
+            if n not in seen:
+                seen.add(n)
+                unique.append(n)
+        return unique
+
     def _retrieve(self, intent: str, entity: Optional[str], entity_type: Optional[str], question: str) -> dict:
         """根据意图从Neo4j检索数据"""
         if intent == "patient" and entity:
             return self._retrieve_patient(entity, question)
 
-        if intent == "disease" and entity:
-            return self._retrieve_disease(entity)
-
-        if intent == "drug" and entity:
-            return self._retrieve_drug_pattern(entity)
-
-        if intent == "comorbidity" and entity:
-            return self._retrieve_comorbidity(entity)
+        # 疾病相关意图：先解析关键词为图谱中的实际疾病名列表
+        if intent in ("disease", "drug", "comorbidity") and entity:
+            disease_names = self._resolve_disease_names(entity)
+            if not disease_names:
+                # fallback: 用原关键词再试一次（可能完全一致匹配）
+                disease_names = [entity]
+            if intent == "disease":
+                return self._retrieve_disease(disease_names)
+            if intent == "drug":
+                return self._retrieve_drug_pattern(disease_names)
+            if intent == "comorbidity":
+                return self._retrieve_comorbidity(disease_names)
 
         if intent == "readmission":
             return self._retrieve_readmission_summary()
@@ -210,45 +232,50 @@ class KGRAGService:
             "visits": displayed_visits,  # 限制数量避免token爆炸
         }
 
-    def _retrieve_disease(self, disease_name: str) -> dict:
-        """检索疾病诊疗路径数据"""
+    def _retrieve_disease(self, disease_names: List[str]) -> dict:
+        """检索疾病诊疗路径数据（支持多疾病聚合）"""
         # Top 药品
         drug_records = neo4j_client.run("""
-            MATCH (d:Disease {name: $name})<-[:DIAGNOSED_WITH]-(v:Visit)-[:PRESCRIBED]->(dr:Drug)
+            MATCH (d:Disease)<-[:DIAGNOSED_WITH]-(v:Visit)-[:PRESCRIBED]->(dr:Drug)
+            WHERE d.name IN $names
             RETURN dr.name AS name, count(DISTINCT v) AS cnt
             ORDER BY cnt DESC LIMIT 10
-        """, {"name": disease_name})
+        """, {"names": disease_names})
         top_drugs = [{"name": r["name"], "count": r["cnt"]} for r in drug_records]
 
         # Top 检查
         exam_records = neo4j_client.run("""
-            MATCH (d:Disease {name: $name})<-[:DIAGNOSED_WITH]-(v:Visit)-[:PERFORMED_EXAM]->(e:Exam)
+            MATCH (d:Disease)<-[:DIAGNOSED_WITH]-(v:Visit)-[:PERFORMED_EXAM]->(e:Exam)
+            WHERE d.name IN $names
             RETURN e.name AS name, count(DISTINCT v) AS cnt
             ORDER BY cnt DESC LIMIT 10
-        """, {"name": disease_name})
+        """, {"names": disease_names})
         top_exams = [{"name": r["name"], "count": r["cnt"]} for r in exam_records]
 
-        # Top 合并症
+        # Top 合并症（排除自身）
         comorb_records = neo4j_client.run("""
-            MATCH (d:Disease {name: $name})<-[:DIAGNOSED_WITH]-(v:Visit)-[:DIAGNOSED_WITH]->(co:Disease)
-            WHERE co.name <> d.name
+            MATCH (d:Disease)<-[:DIAGNOSED_WITH]-(v:Visit)-[:DIAGNOSED_WITH]->(co:Disease)
+            WHERE d.name IN $names AND NOT co.name IN $names
             RETURN co.name AS name, count(DISTINCT v) AS cnt
             ORDER BY cnt DESC LIMIT 10
-        """, {"name": disease_name})
+        """, {"names": disease_names})
         comorbidities = [{"name": r["name"], "count": r["cnt"]} for r in comorb_records]
 
         # 住院天数统计
         los_records = neo4j_client.run("""
-            MATCH (d:Disease {name: $name})<-[:DIAGNOSED_WITH]-(v:Visit)
+            MATCH (d:Disease)<-[:DIAGNOSED_WITH]-(v:Visit)
+            WHERE d.name IN $names
             RETURN count(v) AS visit_count,
                    avg(v.length_of_stay) AS avg_los,
                    percentileCont(v.length_of_stay, 0.5) AS median_los
-        """, {"name": disease_name})
+        """, {"names": disease_names})
         los = los_records[0] if los_records else {}
 
+        display_name = disease_names[0] if len(disease_names) == 1 else f"{disease_names[0]} 等{len(disease_names)}种"
         return {
             "type": "disease_pathway",
-            "disease_name": disease_name,
+            "disease_name": display_name,
+            "matched_diseases": disease_names,
             "visit_count": los.get("visit_count", 0),
             "avg_los": round(los.get("avg_los", 0) or 0, 1),
             "median_los": round(los.get("median_los", 0) or 0, 1),
@@ -257,47 +284,52 @@ class KGRAGService:
             "comorbidities": comorbidities,
         }
 
-    def _retrieve_drug_pattern(self, disease_name: str) -> dict:
-        """检索疾病用药模式"""
+    def _retrieve_drug_pattern(self, disease_names: List[str]) -> dict:
+        """检索疾病用药模式（支持多疾病聚合）"""
         drug_records = neo4j_client.run("""
-            MATCH (d:Disease {name: $name})<-[:DIAGNOSED_WITH]-(v:Visit)-[:PRESCRIBED]->(dr:Drug)
+            MATCH (d:Disease)<-[:DIAGNOSED_WITH]-(v:Visit)-[:PRESCRIBED]->(dr:Drug)
+            WHERE d.name IN $names
             WITH dr.name AS name, count(DISTINCT v) AS cnt, collect(DISTINCT v.visit_id) AS visits
             ORDER BY cnt DESC LIMIT 10
             RETURN name, cnt, visits
-        """, {"name": disease_name})
+        """, {"names": disease_names})
         top_drugs = [{"name": r["name"], "count": r["cnt"]} for r in drug_records]
 
         pair_records = neo4j_client.run("""
-            MATCH (d:Disease {name: $name})<-[:DIAGNOSED_WITH]-(v:Visit)-[:PRESCRIBED]->(dr:Drug)
+            MATCH (d:Disease)<-[:DIAGNOSED_WITH]-(v:Visit)-[:PRESCRIBED]->(dr:Drug)
+            WHERE d.name IN $names
             WITH v, collect(dr.name) AS drugs
             UNWIND drugs AS d1
             UNWIND drugs AS d2
             WITH d1, d2, count(*) AS pair_count WHERE d1 < d2
             RETURN d1, d2, pair_count ORDER BY pair_count DESC LIMIT 10
-        """, {"name": disease_name})
+        """, {"names": disease_names})
         pairs = [{"drug1": r["d1"], "drug2": r["d2"], "count": r["pair_count"]} for r in pair_records]
 
+        display_name = disease_names[0] if len(disease_names) == 1 else f"{disease_names[0]} 等{len(disease_names)}种"
         return {
             "type": "drug_pattern",
-            "disease_name": disease_name,
+            "disease_name": display_name,
+            "matched_diseases": disease_names,
             "top_drugs": top_drugs,
             "common_pairs": pairs,
         }
 
-    def _retrieve_comorbidity(self, disease_name: str) -> dict:
-        """检索疾病合并症"""
+    def _retrieve_comorbidity(self, disease_names: List[str]) -> dict:
+        """检索疾病合并症（支持多疾病聚合）"""
         records = neo4j_client.run("""
-            MATCH (d:Disease {name: $name})<-[:DIAGNOSED_WITH]-(v:Visit)-[:DIAGNOSED_WITH]->(co:Disease)
-            WHERE co.name <> d.name
+            MATCH (d:Disease)<-[:DIAGNOSED_WITH]-(v:Visit)-[:DIAGNOSED_WITH]->(co:Disease)
+            WHERE d.name IN $names AND NOT co.name IN $names
             RETURN co.name AS name, count(DISTINCT v) AS cnt,
                    avg(v.length_of_stay) AS avg_los
             ORDER BY cnt DESC LIMIT 15
-        """, {"name": disease_name})
+        """, {"names": disease_names})
 
         total_records = neo4j_client.run("""
-            MATCH (d:Disease {name: $name})<-[:DIAGNOSED_WITH]-(v:Visit)
+            MATCH (d:Disease)<-[:DIAGNOSED_WITH]-(v:Visit)
+            WHERE d.name IN $names
             RETURN count(DISTINCT v) AS total
-        """, {"name": disease_name})
+        """, {"names": disease_names})
         total = total_records[0]["total"] if total_records else 0
 
         comorbidities = []
@@ -310,9 +342,11 @@ class KGRAGService:
                 "avg_los": round(r["avg_los"] or 0, 1),
             })
 
+        display_name = disease_names[0] if len(disease_names) == 1 else f"{disease_names[0]} 等{len(disease_names)}种"
         return {
             "type": "comorbidity",
-            "disease_name": disease_name,
+            "disease_name": display_name,
+            "matched_diseases": disease_names,
             "total_visits": total,
             "comorbidities": comorbidities,
         }

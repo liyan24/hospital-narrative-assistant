@@ -290,7 +290,7 @@ class TCMNarrativeService:
             WITH v, count(DISTINCT t) AS tcm_count, collect(DISTINCT dr.name) AS drugs
             WITH v,
                  (tcm_count > 0) AS has_tcm_diagnosis,
-                 any(d IN drugs WHERE {' OR '.join([f'd CONTAINS \"{kw}\"' for kw in self.TCM_DRUG_KEYWORDS[:10]])}) AS has_tcm_drug
+                 any(d IN drugs WHERE {' OR '.join([f'd CONTAINS "{kw}"' for kw in self.TCM_DRUG_KEYWORDS[:10]])}) AS has_tcm_drug
             WITH v, (has_tcm_diagnosis OR has_tcm_drug) AS has_tcm
             RETURN has_tcm,
                    count(v) AS visit_count,

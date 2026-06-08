@@ -159,6 +159,7 @@ class PathwayNarrativeService:
             ],
             temperature=0.3,
             max_tokens=2000,
+            cache_namespace=f"pathway:{disease_name}",
         )
 
         return {

@@ -514,7 +514,8 @@ class QualityControlService:
             {"role": "system", "content": system},
             {"role": "user", "content": "\n".join(lines)},
         ]
-        return llm_service.chat(messages, temperature=0.4, max_tokens=2500)
+        ns = f"quality_control:{disease_name}" if disease_name else "quality_control:all"
+        return llm_service.chat(messages, temperature=0.4, max_tokens=2500, cache_namespace=ns)
 
 
 # 全局单例

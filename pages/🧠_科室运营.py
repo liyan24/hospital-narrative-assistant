@@ -28,7 +28,7 @@ with col2:
 if st.button("📊 生成运营分析报告", type="primary"):
     with st.spinner("正在从知识图谱提取运营数据并生成分析叙事，请稍候..."):
         path = f"/api/narrative/department-operation?period={period}&compare={str(compare).lower()}"
-        result = api_get(path)
+        result = api_get(path, timeout=120)
 
         if result and result.get("narrative"):
             current = result.get("current_period", {})

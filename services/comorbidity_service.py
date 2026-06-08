@@ -135,6 +135,7 @@ class ComorbidityService:
         context = self._build_context(data)
         prompt = self._build_prompt(context)
 
+        ns = f"comorbidity:{target_disease}" if target_disease else "comorbidity:global"
         narrative = self.llm.chat(
             [
                 {"role": "system", "content": "你是一位资深临床流行病学家，擅长分析疾病共现模式和合并症网络。请基于提供的统计数据，用中文撰写一段专业的疾病共现网络分析叙事。要体现出合并症的临床意义、不同疾病之间的关联强度、以及对诊疗决策的影响。语气专业、数据驱动，适合科室学术汇报使用。直接输出叙事文本，不要加标题。"},
@@ -142,6 +143,7 @@ class ComorbidityService:
             ],
             temperature=0.3,
             max_tokens=2000,
+            cache_namespace=ns,
         )
 
         return {

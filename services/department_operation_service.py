@@ -361,7 +361,8 @@ class DepartmentOperationService:
             {"role": "system", "content": system},
             {"role": "user", "content": "\n".join(lines)},
         ]
-        return llm_service.chat(messages, temperature=0.4, max_tokens=3000)
+        ns = f"department_operation:{current_period.get('label', 'unknown')}"
+        return llm_service.chat(messages, temperature=0.4, max_tokens=3000, cache_namespace=ns)
 
 
 # 全局单例

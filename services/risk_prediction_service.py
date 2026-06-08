@@ -291,7 +291,7 @@ class RiskPredictionService:
             {"role": "system", "content": system},
             {"role": "user", "content": "\n".join(lines)},
         ]
-        return llm_service.chat(messages, temperature=0.4, max_tokens=2000)
+        return llm_service.chat(messages, temperature=0.4, max_tokens=2000, cache_namespace=f"risk:patient:{data.get('patient_id', 'unknown')}")
 
     def _generate_global_risk_narrative(self, data: dict) -> str:
         """生成全局风险预警叙事"""
@@ -325,7 +325,7 @@ class RiskPredictionService:
             {"role": "system", "content": system},
             {"role": "user", "content": "\n".join(lines)},
         ]
-        return llm_service.chat(messages, temperature=0.4, max_tokens=2000)
+        return llm_service.chat(messages, temperature=0.4, max_tokens=2000, cache_namespace="risk:global")
 
 
 # 全局单例

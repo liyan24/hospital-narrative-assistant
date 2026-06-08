@@ -436,12 +436,12 @@ class KGRAGService:
 
         return self._answer_general(question, retrieved)
 
-    def _build_prompt(self, system: str, user: str) -> str:
+    def _build_prompt(self, system: str, user: str, cache_namespace: str = "kg_rag:general") -> str:
         messages = [
             {"role": "system", "content": system},
             {"role": "user", "content": user},
         ]
-        return llm_service.chat(messages, temperature=0.3, max_tokens=2000)
+        return llm_service.chat(messages, temperature=0.3, max_tokens=2000, cache_namespace=cache_namespace)
 
     def _answer_patient(self, question: str, retrieved: dict) -> str:
         visits = retrieved.get("visits", [])
@@ -478,7 +478,7 @@ class KGRAGService:
                 lines.append(f"  手术: {', '.join(v['surgeries'])}")
 
         user = f"问题: {question}\n\n患者就诊数据:\n" + "\n".join(lines)
-        return self._build_prompt(system, user)
+        return self._build_prompt(system, user, cache_namespace=f"kg_rag:patient:{retrieved.get('patient_id', 'unknown')}")
 
     def _answer_disease(self, question: str, retrieved: dict) -> str:
         system = (
@@ -507,7 +507,7 @@ class KGRAGService:
                 lines.append(f"  - {c['name']}: {c['count']}次")
 
         user = f"问题: {question}\n\n诊疗统计数据:\n" + "\n".join(lines)
-        return self._build_prompt(system, user)
+        return self._build_prompt(system, user, cache_namespace=f"kg_rag:disease:{retrieved.get('disease_name', 'unknown')}")
 
     def _answer_drug(self, question: str, retrieved: dict) -> str:
         system = (
@@ -526,7 +526,7 @@ class KGRAGService:
                 lines.append(f"  - {p['drug1']} + {p['drug2']}: {p['count']}次")
 
         user = f"问题: {question}\n\n用药统计数据:\n" + "\n".join(lines)
-        return self._build_prompt(system, user)
+        return self._build_prompt(system, user, cache_namespace=f"kg_rag:drug:{retrieved.get('drug_name', 'unknown')}")
 
     def _answer_comorbidity(self, question: str, retrieved: dict) -> str:
         system = (
@@ -547,7 +547,7 @@ class KGRAGService:
                 )
 
         user = f"问题: {question}\n\n合并症统计数据:\n" + "\n".join(lines)
-        return self._build_prompt(system, user)
+        return self._build_prompt(system, user, cache_namespace=f"kg_rag:comorbidity:{retrieved.get('target_disease', 'unknown')}")
 
     def _answer_readmission(self, question: str, retrieved: dict) -> str:
         system = (
@@ -567,7 +567,7 @@ class KGRAGService:
                 lines.append(f"  - {d['name']}: {d['count']}人")
 
         user = f"问题: {question}\n\n再入院统计数据:\n" + "\n".join(lines)
-        return self._build_prompt(system, user)
+        return self._build_prompt(system, user, cache_namespace="kg_rag:readmission:summary")
 
     def _answer_general(self, question: str, retrieved: dict) -> str:
         system = (
@@ -588,7 +588,7 @@ class KGRAGService:
                 lines.append(f"  - {d['name']}: {d['count']}次就诊")
 
         user = f"问题: {question}\n\n" + "\n".join(lines)
-        return self._build_prompt(system, user)
+        return self._build_prompt(system, user, cache_namespace="kg_rag:general")
 
     def _build_sources(self, retrieved: dict) -> list:
         """构建数据来源说明"""

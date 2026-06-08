@@ -154,6 +154,7 @@ class ReadmissionService:
             ],
             temperature=0.3,
             max_tokens=2000,
+            cache_namespace=f"readmission:patient:{patient_id}",
         )
 
         return {
@@ -178,6 +179,7 @@ class ReadmissionService:
             ],
             temperature=0.3,
             max_tokens=2000,
+            cache_namespace="readmission:summary",
         )
 
         return {

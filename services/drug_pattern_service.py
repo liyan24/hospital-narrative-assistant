@@ -138,6 +138,7 @@ class DrugPatternService:
         context = self._build_context(data)
         prompt = self._build_prompt(context)
 
+        ns = f"drug_pattern:{disease_name}" if disease_name else "drug_pattern:global"
         narrative = self.llm.chat(
             [
                 {"role": "system", "content": "你是一位资深临床药师兼肿瘤科专家，擅长分析科室用药模式和合理性。请基于提供的统计数据，用中文撰写一段用药模式分析叙事。要体现出常用药组合的规律性、中西医结合特点、以及潜在的用药问题（如重复用药、相互作用风险等）。语气专业、数据驱动，适合科室药事管理汇报使用。直接输出叙事文本，不要加标题。"},
@@ -145,6 +146,7 @@ class DrugPatternService:
             ],
             temperature=0.3,
             max_tokens=2000,
+            cache_namespace=ns,
         )
 
         return {

@@ -4,8 +4,9 @@ Streamlit 前端公共 API 客户端
 """
 import requests
 import streamlit as st
+from config import settings
 
-API_BASE = "http://localhost:8005"
+API_BASE = f"http://localhost:{settings.app_port}"
 
 
 def api_get(path, timeout=30):

@@ -729,3 +729,47 @@ async def get_risk_prediction(patient_id: Optional[str] = None, top_n: int = 20)
         high_risk_patients=result.get("high_risk_patients", []),
         score_distribution=result.get("score_distribution", {}),
     )
+
+# ========== LLM 缓存管理接口 ==========
+
+from database.llm_cache import llm_cache_store
+from fastapi import Query
+
+
+@router.get("/cache/stats")
+async def get_cache_stats():
+    """获取LLM缓存统计信息"""
+    return {"status": "ok", "stats": llm_cache_store.get_stats()}
+
+
+@router.get("/cache/namespaces")
+async def list_cache_namespaces():
+    """列出所有缓存命名空间及其数量"""
+    return {"status": "ok", "namespaces": llm_cache_store.list_namespaces()}
+
+
+@router.get("/cache/list/{namespace}")
+async def list_cache_by_namespace(namespace: str):
+    """列出指定命名空间的所有缓存元数据"""
+    return {"status": "ok", "namespace": namespace, "entries": llm_cache_store.list_by_namespace(namespace)}
+
+
+@router.post("/cache/clear/{namespace}")
+async def clear_cache_namespace(namespace: str):
+    """清理指定命名空间的所有缓存"""
+    count = llm_cache_store.delete_by_namespace(namespace)
+    return {"status": "ok", "deleted": count, "namespace": namespace}
+
+
+@router.post("/cache/clear-expired")
+async def clear_expired_cache():
+    """清理所有过期的缓存"""
+    count = llm_cache_store.delete_expired()
+    return {"status": "ok", "deleted": count}
+
+
+@router.post("/cache/clear-all")
+async def clear_all_cache():
+    """清空所有LLM缓存（慎用）"""
+    count = llm_cache_store.clear_all()
+    return {"status": "ok", "deleted": count}

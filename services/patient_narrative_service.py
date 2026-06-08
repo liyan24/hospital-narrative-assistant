@@ -129,6 +129,7 @@ class PatientNarrativeService:
             ],
             temperature=0.3,
             max_tokens=2000,
+            cache_namespace=f"patient_story:{patient_id}",
         )
 
         return {

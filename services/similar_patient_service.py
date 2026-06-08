@@ -241,7 +241,8 @@ class SimilarPatientService:
             {"role": "system", "content": system},
             {"role": "user", "content": "\n".join(lines)},
         ]
-        return llm_service.chat(messages, temperature=0.4, max_tokens=2000)
+        ns = f"similar_patient:{target.get('patient_id', 'unknown')}"
+        return llm_service.chat(messages, temperature=0.4, max_tokens=2000, cache_namespace=ns)
 
 
 # 全局单例

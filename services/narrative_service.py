@@ -80,6 +80,7 @@ class NarrativeService:
             ],
             temperature=0.3,
             max_tokens=2000,
+            cache_namespace=f"narrative:{section}",
         )
 
     def generate_full_report(self, analysis_id: str = "latest") -> dict:

@@ -40,7 +40,7 @@ if st.button("🔍 运行质控分析", type="primary"):
         path = "/api/narrative/quality-control?" + \
             "&".join(
                 [f"{k}={requests.utils.quote(v)}" for k, v in params.items()])
-        result = api_get(path)
+        result = api_get(path, timeout=120)
 
         if result and result.get("narrative"):
             summary = result.get("summary", {})

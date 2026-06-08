@@ -26,10 +26,18 @@ class Settings(BaseSettings):
     # JSON存储
     json_store_path: str = "./data/json_store"
 
+    # LLM缓存配置
+    llm_cache_path: str = "./data/llm_cache"
+    llm_cache_ttl_hours: int = 240
+    llm_cache_enabled: bool = True
+
     # 应用配置
     app_host: str = "0.0.0.0"
     app_port: int = 8000
     app_debug: bool = True
+
+    # 前端配置
+    frontend_port: int = 8501
 
     class Config:
         env_file = ".env"

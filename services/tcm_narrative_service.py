@@ -431,12 +431,12 @@ class TCMNarrativeService:
 
     # ========== LLM 叙事生成 ==========
 
-    def _call_llm(self, system: str, user: str) -> str:
+    def _call_llm(self, system: str, user: str, cache_namespace: str = "tcm:general") -> str:
         messages = [
             {"role": "system", "content": system},
             {"role": "user", "content": user},
         ]
-        return llm_service.chat(messages, temperature=0.4, max_tokens=2500)
+        return llm_service.chat(messages, temperature=0.4, max_tokens=2500, cache_namespace=cache_namespace)
 
     def _llm_generate_syndrome_narrative(self, data: dict) -> str:
         system = (
@@ -446,7 +446,7 @@ class TCMNarrativeService:
             "4) 语言专业、简洁，中文输出。"
         )
         user = self._format_data_for_prompt(data)
-        return self._call_llm(system, user)
+        return self._call_llm(system, user, cache_namespace=f"tcm:syndrome:{data.get('syndrome_name', 'unknown')}")
 
     def _llm_generate_disease_syndrome_narrative(self, data: dict) -> str:
         system = (
@@ -455,7 +455,7 @@ class TCMNarrativeService:
             "中文输出，专业简洁。"
         )
         user = self._format_data_for_prompt(data)
-        return self._call_llm(system, user)
+        return self._call_llm(system, user, cache_namespace=f"tcm:disease_syndrome:{data.get('western_disease', 'unknown')}")
 
     def _llm_generate_global_tcm_narrative(self, data: dict) -> str:
         system = (
@@ -464,7 +464,7 @@ class TCMNarrativeService:
             "中西医结合比例、证型就诊趋势等。中文输出。"
         )
         user = self._format_data_for_prompt(data)
-        return self._call_llm(system, user)
+        return self._call_llm(system, user, cache_namespace="tcm:global")
 
     def _llm_generate_comparison_narrative(self, data: dict) -> str:
         system = (
@@ -474,7 +474,7 @@ class TCMNarrativeService:
             "中文输出。"
         )
         user = self._format_data_for_prompt(data)
-        return self._call_llm(system, user)
+        return self._call_llm(system, user, cache_namespace="tcm:comparison")
 
     def _llm_generate_trend_narrative(self, data: dict) -> str:
         system = (
@@ -483,7 +483,7 @@ class TCMNarrativeService:
             "中文输出。"
         )
         user = self._format_data_for_prompt(data)
-        return self._call_llm(system, user)
+        return self._call_llm(system, user, cache_namespace=f"tcm:trend:{data.get('title_key', 'unknown')}")
 
     def _format_data_for_prompt(self, data: dict) -> str:
         lines = [f"分析类型: {data.get('type')}"]

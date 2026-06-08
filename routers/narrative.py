@@ -730,6 +730,23 @@ async def get_risk_prediction(patient_id: Optional[str] = None, top_n: int = 20)
         score_distribution=result.get("score_distribution", {}),
     )
 
+@router.get("/reports/latest")
+async def get_latest_report():
+    """获取最近生成的科室运营简报报告ID"""
+    recent = json_store.list_recent(limit=100)
+    for item in recent:
+        data = item["data"]
+        # 排除周简报(report_type=weekly)和分析数据(没有report_id)
+        if data.get("report_id") and data.get("report_type") != "weekly":
+            return {
+                "status": "ok",
+                "report_id": item["doc_id"],
+                "title": data.get("title", ""),
+                "generated_at": data.get("generated_at", ""),
+            }
+    return {"status": "not_found", "report_id": None}
+
+
 # ========== LLM 缓存管理接口 ==========
 
 from database.llm_cache import llm_cache_store

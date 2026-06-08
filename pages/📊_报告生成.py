@@ -1,11 +1,17 @@
 """
-报告生成
+科室运营简报生成
 """
 import streamlit as st
 from streamlit_echarts import st_echarts
 from utils.api_client import api_get, api_post
 
-st.header("🤖 智能报告生成")
+st.header("📄 科室运营简报生成")
+
+# 自动加载最近一次生成的科室运营简报ID
+if "last_report_id" not in st.session_state:
+    latest = api_get("/api/narrative/reports/latest")
+    if latest and latest.get("status") == "ok" and latest.get("report_id"):
+        st.session_state["last_report_id"] = latest["report_id"]
 
 col1, col2 = st.columns([3, 1])
 with col1:

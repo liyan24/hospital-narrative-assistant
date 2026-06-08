@@ -34,6 +34,27 @@ class JSONStore:
     def list_all(self) -> list[str]:
         return [p.stem for p in self.base_path.glob("*.json")]
 
+    def list_recent(self, limit: int = 50) -> list[dict]:
+        """按修改时间倒序列出所有文档"""
+        files = sorted(
+            self.base_path.glob("*.json"),
+            key=lambda p: p.stat().st_mtime,
+            reverse=True,
+        )
+        results = []
+        for p in files[:limit]:
+            try:
+                with open(p, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                results.append({
+                    "doc_id": p.stem,
+                    "modified_at": p.stat().st_mtime,
+                    "data": data,
+                })
+            except (json.JSONDecodeError, OSError):
+                continue
+        return results
+
 
 # 全局单例
 json_store = JSONStore()

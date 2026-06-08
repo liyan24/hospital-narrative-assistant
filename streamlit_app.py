@@ -17,9 +17,9 @@ pages = {
     ],
     "📊 统计分析与报告": [
         st.Page("pages/📊_数据概览.py", title="📊 数据概览"),
-        st.Page("pages/📊_报告生成.py", title="📄 报告生成"),
-        st.Page("pages/📊_文档导出.py", title="📥 文档导出"),
+        st.Page("pages/📊_报告生成.py", title="📄 科室运营简报生成"),
         st.Page("pages/📊_周简报.py", title="📅 周简报"),
+        st.Page("pages/📊_文档导出.py", title="📥 文档导出"),
     ],
     "🧠 知识图谱叙事": [
         st.Page("pages/🧠_患者故事线.py", title="👤 患者故事线"),

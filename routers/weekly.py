@@ -90,6 +90,23 @@ async def export_weekly_report(report_id: str, fmt: str = "docx"):
     }
 
 
+@router.get("/reports/latest")
+async def get_latest_weekly_report():
+    """获取最近生成的周简报报告ID"""
+    recent = json_store.list_recent(limit=100)
+    for item in recent:
+        data = item["data"]
+        if data.get("report_type") == "weekly" and data.get("report_id"):
+            return {
+                "status": "ok",
+                "report_id": item["doc_id"],
+                "title": data.get("title", ""),
+                "week_range": data.get("week_range", ""),
+                "generated_at": data.get("generated_at", ""),
+            }
+    return {"status": "not_found", "report_id": None}
+
+
 from fastapi.responses import FileResponse
 from pathlib import Path
 

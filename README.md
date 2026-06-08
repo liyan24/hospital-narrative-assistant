@@ -14,9 +14,9 @@
 | 功能 | 说明 |
 |------|------|
 | **数据概览** | 整合入院/出院/检查/检验/手术等多源数据，ECharts交互式图表展示 |
-| **智能报告生成** | LLM驱动，自动生成科室数据分析报告（Word/PDF导出） |
-| **每周临床简报** | 按周聚合运营数据，自动生成7大模块周简报 |
-| **文档导出** | 支持 DOCX / PDF 一键导出 |
+| **科室运营简报生成** | LLM驱动，自动生成科室数据分析报告（Word/PDF导出），默认加载最近一次报告 |
+| **每周临床简报** | 按周聚合运营数据，自动生成7大模块周简报，运行分析后即时展示结果 |
+| **文档导出** | 支持科室运营简报与周简报分别导出为 DOCX / PDF |
 
 ### 🧠 二、知识图谱叙事
 构建患者-就诊-疾病-药品-检查-手术等多实体医疗知识图谱，挖掘深层关联模式。
@@ -40,11 +40,12 @@
 
 ## 🏗️ 技术栈
 
-- **前端**: Streamlit
+- **前端**: Streamlit (Pages v2 多页面导航)
 - **后端**: FastAPI + Uvicorn
 - **知识图谱**: Neo4j (32,694 节点 / 788,119 关系)
 - **数据库**: MySQL (结构化数据) + ChromaDB (向量检索) + JSON文件存储
 - **大模型**: OpenAI API 兼容接口
+- **LLM缓存**: 基于内容哈希的持久化缓存，支持TTL与命名空间管理
 - **文档生成**: python-docx
 - **数据可视化**: ECharts (streamlit-echarts)
 
@@ -82,11 +83,12 @@ cp .env.example .env
 关键配置项：
 - `OPENAI_API_KEY` / `OPENAI_BASE_URL` / `OPENAI_MODEL` — 大模型接口
 - `NEO4J_URI` / `NEO4J_USER` / `NEO4J_PASSWORD` — Neo4j连接
+- `APP_PORT` / `FRONTEND_PORT` — 服务端/前端端口（默认 8005 / 8501）
 
 ### 4. 启动服务
 
 ```bash
-# 终端1：启动后端 API (http://localhost:8000)
+# 终端1：启动后端 API (http://localhost:8005)
 python main.py
 
 # 终端2：启动前端 (http://localhost:8501)
@@ -98,7 +100,7 @@ streamlit run streamlit_app.py
 进入前端页面 **⚙️ 知识图谱管理** → 点击「构建知识图谱」按钮，或调用API：
 
 ```bash
-curl -X POST http://localhost:8000/api/kg/build \
+curl -X POST http://localhost:8005/api/kg/build \
   -H "Content-Type: application/json" \
   -d '{"clear": false}'
 ```
@@ -110,8 +112,8 @@ curl -X POST http://localhost:8000/api/kg/build \
 ```
 hospital-narrative-assistant/
 ├── main.py                          # FastAPI 主入口
-├── streamlit_app.py                 # Streamlit 前端
-├── config.py                        # 配置管理
+├── streamlit_app.py                 # Streamlit 前端导航入口
+├── config.py                        # Pydantic Settings 配置管理
 ├── requirements.txt                 # Python 依赖
 ├── .env / .env.example              # 环境变量
 │
@@ -119,13 +121,14 @@ hospital-narrative-assistant/
 │   ├── neo4j_client.py              # Neo4j 连接
 │   ├── mysql_client.py              # MySQL 连接
 │   ├── vector_store.py              # ChromaDB 向量存储
-│   └── json_store.py                # JSON 文件存储
+│   ├── json_store.py                # JSON 文件存储
+│   └── llm_cache.py                 # LLM输出缓存存储（内容哈希+TTL+命名空间）
 │
 ├── models/
 │   └── schemas.py                   # Pydantic 数据模型
 │
 ├── services/                        # 业务服务层
-│   ├── llm_service.py               # 大模型通用接口
+│   ├── llm_service.py               # 大模型通用接口（含缓存集成）
 │   ├── narrative_service.py         # 统计报告叙事
 │   ├── data_analysis_service.py     # 数据分析
 │   ├── chart_service.py             # ECharts 图表生成
@@ -135,32 +138,56 @@ hospital-narrative-assistant/
 │   ├── weekly_document_service.py   # 周简报导出
 │   ├── knowledge_graph_service.py   # 知识图谱构建
 │   ├── kg_data_cleaner.py           # 数据清洗（疾病/药品标准化）
-│   ├── patient_narrative_service.py # P0: 患者故事线
-│   ├── pathway_narrative_service.py # P0: 诊疗路径
-│   ├── comorbidity_service.py       # P1: 合并症分析
-│   ├── drug_pattern_service.py      # P1: 用药模式
-│   ├── readmission_service.py       # P1: 再入院分析
-│   ├── kg_rag_service.py            # P1: 图谱RAG问答
-│   ├── kg_visual_service.py         # P1: 图谱可视化数据
-│   ├── tcm_narrative_service.py     # P2: 中医特色叙事
-│   ├── quality_control_service.py   # P2: 质控异常
-│   ├── department_operation_service.py  # P2: 科室运营
-│   ├── similar_patient_service.py   # P2: 相似患者推荐
-│   └── risk_prediction_service.py   # P2: 风险预警
+│   ├── patient_narrative_service.py # 患者故事线
+│   ├── pathway_narrative_service.py # 诊疗路径
+│   ├── comorbidity_service.py       # 合并症分析
+│   ├── drug_pattern_service.py      # 用药模式
+│   ├── readmission_service.py       # 再入院分析
+│   ├── kg_rag_service.py            # 图谱RAG问答（含模糊疾病匹配）
+│   ├── kg_visual_service.py         # 图谱可视化数据
+│   ├── tcm_narrative_service.py     # 中医特色叙事
+│   ├── quality_control_service.py   # 质控异常
+│   ├── department_operation_service.py  # 科室运营
+│   ├── similar_patient_service.py   # 相似患者推荐
+│   └── risk_prediction_service.py   # 风险预警
 │
 ├── routers/                         # API 路由
 │   ├── data.py                      # 数据管理 / 健康检查
-│   ├── narrative.py                 # 叙事生成（全部P0/P1/P2接口）
+│   ├── narrative.py                 # 叙事生成 + LLM缓存管理
 │   ├── document.py                  # 文档导出
-│   ├── weekly.py                    # 周简报
+│   ├── weekly.py                    # 周简报分析与导出
 │   └── knowledge_graph.py           # 知识图谱构建/查询/统计
 │
+├── pages/                           # Streamlit Pages (v2)
+│   ├── 🏠_首页.py
+│   ├── 📊_数据概览.py
+│   ├── 📊_报告生成.py              # 科室运营简报生成
+│   ├── 📊_周简报.py
+│   ├── 📊_文档导出.py
+│   ├── 🧠_患者故事线.py
+│   ├── 🧠_诊疗路径.py
+│   ├── 🧠_合并症分析.py
+│   ├── 🧠_用药模式.py
+│   ├── 🧠_再入院分析.py
+│   ├── 🧠_RAG问答.py
+│   ├── 🧠_图谱可视化.py
+│   ├── 🧠_中医特色.py
+│   ├── 🧠_质控异常.py
+│   ├── 🧠_科室运营.py
+│   ├── 🧠_相似患者.py
+│   └── 🧠_风险预警.py
+│
 ├── utils/                           # 工具函数
-│   └── helpers.py
+│   ├── api_client.py                # 前端共享API客户端
+│   ├── helpers.py
+│   ├── report_layout.py             # 报告文本与图表穿插布局
+│   └── weekly_charts.py             # 周简报ECharts渲染
 │
 ├── data/                            # 数据目录
-│   ├── json_store/                  # JSON 缓存
+│   ├── json_store/                  # JSON 数据缓存
+│   ├── llm_cache/                   # LLM输出缓存
 │   ├── kg_cleaned/                  # 清洗后数据缓存
+│   ├── vector_db/                   # ChromaDB向量库
 │   └── outputs/                     # 报告输出目录
 │
 └── output/                          # 示例输出文档
@@ -171,8 +198,8 @@ hospital-narrative-assistant/
 ## 📡 API 文档
 
 启动后端后访问：
-- **Swagger UI**: http://localhost:8000/docs
-- **ReDoc**: http://localhost:8000/redoc
+- **Swagger UI**: http://localhost:8005/docs
+- **ReDoc**: http://localhost:8005/redoc
 
 ### 主要接口分组
 
@@ -181,6 +208,7 @@ hospital-narrative-assistant/
 | `GET /health` | 服务健康检查 |
 | `/api/data/...` | 数据分析、统计图表 |
 | `/api/narrative/...` | 全部叙事生成接口（报告、患者故事线、诊疗路径、合并症、用药、再入院、RAG、中医、质控、运营、相似患者、风险预警） |
+| `/api/narrative/cache/...` | LLM缓存管理（统计/清理/按命名空间清理） |
 | `/api/document/...` | 报告导出（DOCX/PDF） |
 | `/api/weekly/...` | 周简报分析与导出 |
 | `/api/kg/...` | 知识图谱构建、统计、Cypher查询、子图可视化 |
@@ -214,7 +242,7 @@ hospital-narrative-assistant/
 ### ⚡ P1 - 中优先级
 - [x] **疾病共现网络叙事**
 - [x] **用药模式与合理性叙事**
-- [x] **LLM + 知识图谱 RAG**
+- [x] **LLM + 知识图谱 RAG**（含模糊疾病名匹配）
 - [x] **交互式图谱探索**
 - [x] **再入院患者时间线叙事**
 
@@ -224,8 +252,10 @@ hospital-narrative-assistant/
 - [x] **科室运营深度叙事**
 - [x] **相似患者推荐**
 - [x] **预测性叙事 / 风险预警**
+- [x] **LLM输出缓存机制**（避免重复调用，支持TTL与命名空间管理）
+- [x] **统计报告交互优化**（默认加载最近报告、周分析即时展示、双类型导出）
 
-**全部 12 个功能方向已开发完成 ✅**
+**全部 12+ 个功能方向已开发完成 ✅**
 
 ---
 
@@ -233,7 +263,24 @@ hospital-narrative-assistant/
 
 本项目为持续迭代的医院科室数据智能辅助平台。当前版本已完成从基础统计分析到深度知识图谱叙事的完整能力闭环。
 
-如需扩展新功能，可在 `services/` 目录下新增服务，在 `routers/narrative.py` 中注册API，并在 `streamlit_app.py` 中添加前端页面。
+### 扩展新功能
+1. 在 `services/` 目录下新增服务类，调用 `llm_service.chat(cache_namespace="your:namespace")`
+2. 在 `routers/narrative.py` 中注册API
+3. 在 `pages/` 下新增 Streamlit 页面文件
+4. 在 `streamlit_app.py` 中添加到导航分组
+
+### LLM缓存管理
+通过API或前端可管理LLM缓存：
+```bash
+# 查看缓存统计
+curl http://localhost:8005/api/narrative/cache/stats
+
+# 清理过期缓存
+curl -X POST http://localhost:8005/api/narrative/cache/clear-expired
+
+# 按命名空间清理（如 narrative:basic）
+curl -X POST http://localhost:8005/api/narrative/cache/clear/narrative:basic
+```
 
 ---
 

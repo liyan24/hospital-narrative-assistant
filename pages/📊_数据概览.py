@@ -10,7 +10,8 @@ st.header("📊 数据概览")
 # 顶部操作区
 if st.button("🔄 立即运行数据分析", type="primary"):
     with st.spinner("数据分析中，请稍候..."):
-        result = api_post("/api/data/analysis/run", params={"analysis_id": "latest"})
+        result = api_post("/api/data/analysis/run",
+                          params={"analysis_id": "latest"})
         if result and result.get("status") == "ok":
             st.success("数据分析完成！")
             st.rerun()
@@ -35,20 +36,6 @@ with tab1:
         st.write(f"总记录数: {basic.get('total_records', 0):,}")
         st.write(
             f"数据跨度: {basic.get('date_range', {}).get('start', '')} 至 {basic.get('date_range', {}).get('end', '')}")
-
-        st.subheader("入院趋势")
-        trend = data.get("admission_trend", {})
-        annual = trend.get("annual", {})
-        if annual.get("years"):
-            df_data = {"年份": annual["years"], "入院人次": annual["counts"]}
-            st.dataframe(df_data, use_container_width=True)
-
-        st.subheader("患者特征")
-        features = data.get("patient_features", {})
-        age = features.get("age", {})
-        st.write(
-            f"平均年龄: {age.get('mean', '')}岁, 中位数: {age.get('median', '')}岁")
-        st.write(f"年龄范围: {age.get('min', '')} - {age.get('max', '')}岁")
     else:
         st.info("暂无分析数据，请点击上方「立即运行数据分析」按钮")
 

@@ -1,30 +1,28 @@
 @echo off
-chcp 65001 >nul
 setlocal EnableDelayedExpansion
 
 :: ============================================================
-:: 医院叙事生成助手 - Windows 一键启动脚本
-:: 用法: start_windows.bat [start|stop|status|restart|help]
-:: 默认操作: start
+:: Hospital Narrative Assistant - Windows Startup Script
+:: Usage: start_windows.bat [start|stop|status|restart|help]
+:: Default: start
 :: ============================================================
 
-title 医院叙事生成助手 - 服务管理
+title Hospital Narrative Assistant - Service Manager
 
 cd /d "%~dp0.."
 set "PROJECT_ROOT=%CD%"
 
-:: 默认端口
+:: Default ports
 set "APP_PORT=8005"
 set "FRONTEND_PORT=8501"
 
-:: 读取 .env 文件中的端口配置
+:: Read ports from .env
 if exist "%PROJECT_ROOT%\.env" (
     for /f "usebackq tokens=1,2 delims==" %%a in ("%PROJECT_ROOT%\.env") do (
         set "key=%%a"
         set "val=%%b"
-        :: 去除前后空格
-        for /f "tokens=*" %%i in ("!key!") do set "key=%%i"
-        for /f "tokens=*" %%i in ("!val!") do set "val=%%i"
+        set "key=!key: =!"
+        set "val=!val: =!"
         if "!key!"=="APP_PORT" set "APP_PORT=!val!"
         if "!key!"=="FRONTEND_PORT" set "FRONTEND_PORT=!val!"
     )
@@ -34,18 +32,18 @@ set "BACKEND_URL=http://localhost:%APP_PORT%"
 set "FRONTEND_URL=http://localhost:%FRONTEND_PORT%"
 set "BACKEND_LOG=%PROJECT_ROOT%\logs\backend.log"
 set "FRONTEND_LOG=%PROJECT_ROOT%\logs\frontend.log"
+set "BACKEND_PID_FILE=%PROJECT_ROOT%\.backend.pid"
+set "FRONTEND_PID_FILE=%PROJECT_ROOT%\.frontend.pid"
 
-:: 创建日志目录
+:: Create logs directory
 if not exist "%PROJECT_ROOT%\logs" mkdir "%PROJECT_ROOT%\logs"
 
-:: 激活虚拟环境
+:: Activate virtual environment
 if exist "%PROJECT_ROOT%\.venv\Scripts\activate.bat" (
     call "%PROJECT_ROOT%\.venv\Scripts\activate.bat"
-) else (
-    echo [警告] 未找到 .venv 虚拟环境，将使用系统 Python
 )
 
-:: 解析命令
+:: Parse command
 set "COMMAND=%~1"
 if "%COMMAND%"=="" set "COMMAND=start"
 
@@ -57,144 +55,157 @@ if "%COMMAND%"=="help" goto :help
 if "%COMMAND%"=="-h" goto :help
 if "%COMMAND%"=="--help" goto :help
 
-echo [错误] 未知命令: %COMMAND%
+echo [Error] Unknown command: %COMMAND%
 goto :help
 
 :: ============================================================
-:: 启动服务
+:: Start services
 :: ============================================================
 :start
 call :check_status
 
 if "!BACKEND_RUNNING!"=="true" (
-    echo [提示] 后端服务已在运行: %BACKEND_URL%
+    echo [Backend] Already running: %BACKEND_URL%
 ) else (
-    :: 检查端口占用
     call :check_port %APP_PORT%
     if !PORT_OCCUPIED! equ 1 (
-        echo [错误] 后端端口 %APP_PORT% 已被占用
-        echo        请先执行 stop 或更换 APP_PORT
+        echo [Error] Backend port %APP_PORT% is occupied
         exit /b 1
     )
 )
 
 if "!FRONTEND_RUNNING!"=="true" (
-    echo [提示] 前端服务已在运行: %FRONTEND_URL%
+    echo [Frontend] Already running: %FRONTEND_URL%
 ) else (
     call :check_port %FRONTEND_PORT%
     if !PORT_OCCUPIED! equ 1 (
-        echo [错误] 前端端口 %FRONTEND_PORT% 已被占用
-        echo        请先执行 stop 或更换 FRONTEND_PORT
+        echo [Error] Frontend port %FRONTEND_PORT% is occupied
         exit /b 1
     )
 )
 
 echo.
 echo ============================================================
-echo  医院叙事生成助手 - 启动服务
+echo  Hospital Narrative Assistant - Start Services
 echo ============================================================
-echo 后端地址: %BACKEND_URL%
-echo 前端地址: %FRONTEND_URL%
-echo 日志目录: %PROJECT_ROOT%\logs
+echo Backend:  %BACKEND_URL%
+echo Frontend: %FRONTEND_URL%
+echo Logs:     %PROJECT_ROOT%\logs
 echo ============================================================
 echo.
 
-:: 启动后端
 if "!BACKEND_RUNNING!"=="false" (
-    echo [1/2] 正在启动后端 API ...
-    start /B "hospital-backend" cmd /c "cd /d "%PROJECT_ROOT%" && python main.py > "%BACKEND_LOG%" 2>&1"
+    echo [1/2] Starting backend API ...
+    start /B "" cmd /c "cd /d "%PROJECT_ROOT%" && python main.py > "%BACKEND_LOG%" 2>&1"
     timeout /t 3 /nobreak >nul
+    call :find_python_pid > "%BACKEND_PID_FILE%"
     call :check_port %APP_PORT%
     if !PORT_OCCUPIED! equ 1 (
-        echo        后端启动成功
+        echo        Backend started
     ) else (
-        echo        [警告] 后端可能未正常启动，请查看日志: %BACKEND_LOG%
+        echo        [Warning] Backend may not have started, check log: %BACKEND_LOG%
     )
 )
 
-:: 启动前端
 if "!FRONTEND_RUNNING!"=="false" (
-    echo [2/2] 正在启动前端 Streamlit ...
-    start /B "hospital-frontend" cmd /c "cd /d "%PROJECT_ROOT%" && streamlit run streamlit_app.py --server.port %FRONTEND_PORT% > "%FRONTEND_LOG%" 2>&1"
+    echo [2/2] Starting frontend Streamlit ...
+    start /B "" cmd /c "cd /d "%PROJECT_ROOT%" && streamlit run streamlit_app.py --server.port %FRONTEND_PORT% > "%FRONTEND_LOG%" 2>&1"
     timeout /t 5 /nobreak >nul
+    call :find_streamlit_pid > "%FRONTEND_PID_FILE%"
     call :check_port %FRONTEND_PORT%
     if !PORT_OCCUPIED! equ 1 (
-        echo        前端启动成功
+        echo        Frontend started
     ) else (
-        echo        [警告] 前端可能未正常启动，请查看日志: %FRONTEND_LOG%
+        echo        [Warning] Frontend may not have started, check log: %FRONTEND_LOG%
     )
 )
 
 echo.
 echo ============================================================
-echo  服务启动完成
+echo  Services started
 echo ============================================================
-echo 后端 API:    %BACKEND_URL%
-echo 前端页面:    %FRONTEND_URL%
-echo API 文档:    %BACKEND_URL%/docs
-echo 日志文件:    %PROJECT_ROOT%\logs
+echo Backend API: %BACKEND_URL%
+echo Frontend:    %FRONTEND_URL%
+echo API Docs:    %BACKEND_URL%/docs
+echo Logs:        %PROJECT_ROOT%\logs
 echo ============================================================
 echo.
-echo 提示: 使用 start_windows.bat stop  停止服务
-echo       使用 start_windows.bat status 查看状态
-
+echo Tips: start_windows.bat stop   - stop services
+echo       start_windows.bat status - check status
 pause
 goto :eof
 
 :: ============================================================
-:: 停止服务
+:: Stop services
 :: ============================================================
 :stop
 echo.
 echo ============================================================
-echo  医院叙事生成助手 - 停止服务
+echo  Hospital Narrative Assistant - Stop Services
 echo ============================================================
 echo.
 
-:: 通过端口查找并停止后端进程
-call :kill_by_port %APP_PORT% "后端"
+:: Stop by PID file
+if exist "%BACKEND_PID_FILE%" (
+    set /p PID=<"%BACKEND_PID_FILE%"
+    if defined PID (
+        echo [Stop] Backend service PID: !PID!
+        taskkill /PID !PID! /F >nul 2>&1
+    )
+    del "%BACKEND_PID_FILE%" >nul 2>&1
+)
 
-:: 通过端口查找并停止前端进程
-call :kill_by_port %FRONTEND_PORT% "前端"
+if exist "%FRONTEND_PID_FILE%" (
+    set /p PID=<"%FRONTEND_PID_FILE%"
+    if defined PID (
+        echo [Stop] Frontend service PID: !PID!
+        taskkill /PID !PID! /F >nul 2>&1
+    )
+    del "%FRONTEND_PID_FILE%" >nul 2>&1
+)
+
+:: Fallback: stop by port
+call :kill_by_port %APP_PORT% "Backend"
+call :kill_by_port %FRONTEND_PORT% "Frontend"
 
 echo.
-echo [完成] 所有服务已停止
+echo [Done] All services stopped
 pause
 goto :eof
 
 :: ============================================================
-:: 查看状态
+:: Show status
 :: ============================================================
 :status
 call :check_status
 
 echo.
 echo ============================================================
-echo  服务状态
+echo  Hospital Narrative Assistant - Service Status
 echo ============================================================
 if "!BACKEND_RUNNING!"=="true" (
-    echo [后端] 运行中 - %BACKEND_URL%
+    echo [Backend] Running - %BACKEND_URL%
 ) else (
-    echo [后端] 未运行
+    echo [Backend] Not running
 )
 
 if "!FRONTEND_RUNNING!"=="true" (
-    echo [前端] 运行中 - %FRONTEND_URL%
+    echo [Frontend] Running - %FRONTEND_URL%
 ) else (
-    echo [前端] 未运行
+    echo [Frontend] Not running
 )
 
 echo.
 if "!BACKEND_RUNNING!"=="true" if "!FRONTEND_RUNNING!"=="true" (
-    echo [状态] 所有服务正常运行
+    echo [Status] All services are running
 ) else (
-    echo [状态] 部分服务未运行
+    echo [Status] Some services are not running
 )
-
+pause
 goto :eof
 
 :: ============================================================
-:: 重启服务
+:: Restart services
 :: ============================================================
 :restart
 call :stop
@@ -203,37 +214,37 @@ call :start
 goto :eof
 
 :: ============================================================
-:: 帮助信息
+:: Help
 :: ============================================================
 :help
 echo.
 echo ============================================================
-echo  医院叙事生成助手 - Windows 服务管理脚本
+echo  Hospital Narrative Assistant - Windows Service Manager
 echo ============================================================
 echo.
-echo 用法: start_windows.bat [命令]
+echo Usage: start_windows.bat [command]
 echo.
-echo 可用命令:
-echo   start    启动前后端服务（默认）
-echo   stop     停止前后端服务
-echo   status   查看服务运行状态
-echo   restart  重启前后端服务
-echo   help     显示帮助信息
+echo Commands:
+echo   start    Start backend and frontend services (default)
+echo   stop     Stop all services
+echo   status   Show service status
+echo   restart  Restart all services
+echo   help     Show this help
 echo.
-echo 示例:
+echo Examples:
 echo   start_windows.bat
 echo   start_windows.bat start
 echo   start_windows.bat stop
 echo   start_windows.bat status
 echo.
-
+echo Note: For full Chinese output and better stability, use:
+echo       powershell -ExecutionPolicy Bypass -File scripts\start_windows.ps1
+echo.
 pause
 goto :eof
 
 :: ============================================================
-:: 子程序：检查端口是否被占用
-:: 参数 %%1: 端口号
-:: 输出: PORT_OCCUPIED=1 表示被占用，=0 表示未占用
+:: Subroutine: check port occupancy
 :: ============================================================
 :check_port
 set "PORT_OCCUPIED=0"
@@ -242,8 +253,7 @@ if !errorlevel! equ 0 set "PORT_OCCUPIED=1"
 goto :eof
 
 :: ============================================================
-:: 子程序：检查服务状态
-:: 输出: BACKEND_RUNNING, FRONTEND_RUNNING
+:: Subroutine: check service status
 :: ============================================================
 :check_status
 call :check_port %APP_PORT%
@@ -262,20 +272,31 @@ if !PORT_OCCUPIED! equ 1 (
 goto :eof
 
 :: ============================================================
-:: 子程序：通过端口停止进程
-:: 参数 %%1: 端口号, %%2: 服务名称
+:: Subroutine: kill process by port
 :: ============================================================
 :kill_by_port
-set "TARGET_PORT=%~1"
-set "SERVICE_NAME=%~2"
-
-for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":%TARGET_PORT% " ^| findstr "LISTENING"') do (
-    echo [停止] %SERVICE_NAME% 服务 PID: %%a
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":%~1 " ^| findstr "LISTENING"') do (
+    echo [Stop] %~2 service PID: %%a
     taskkill /PID %%a /F >nul 2>&1
-    if !errorlevel! equ 0 (
-        echo        %SERVICE_NAME% 已停止
-    ) else (
-        echo        [警告] 无法停止 %SERVICE_NAME% PID %%a，可能需要管理员权限
-    )
+)
+goto :eof
+
+:: ============================================================
+:: Subroutine: find python main.py PID
+:: ============================================================
+:find_python_pid
+for /f "tokens=2 delims=," %%a in ('wmic process where "commandline like '%%python main.py%%'" get processid /format:csv ^| findstr "[0-9]"') do (
+    echo %%a
+    goto :eof
+)
+goto :eof
+
+:: ============================================================
+:: Subroutine: find streamlit PID
+:: ============================================================
+:find_streamlit_pid
+for /f "tokens=2 delims=," %%a in ('wmic process where "commandline like '%%streamlit run streamlit_app.py%%'" get processid /format:csv ^| findstr "[0-9]"') do (
+    echo %%a
+    goto :eof
 )
 goto :eof

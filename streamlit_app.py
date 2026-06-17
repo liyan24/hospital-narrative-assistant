@@ -1,6 +1,7 @@
 """
 Streamlit 前端入口：医院叙事生成助手
 采用 Streamlit Pages (v2 navigation) 多页面结构
+以医生工作流为中心重新组织导航
 """
 import streamlit as st
 
@@ -8,14 +9,20 @@ st.set_page_config(
     page_title="医院叙事生成助手",
     page_icon="🏥",
     layout="wide",
+    initial_sidebar_state="expanded",
 )
 
 # ========== 显式定义多页面导航（兼容 Streamlit 1.58+）==========
 pages = {
-    "🏠 首页": [
-        st.Page("pages/🏠_首页.py", title="🏠 首页", icon="🏥", default=True),
+    "🏠 工作台": [
+        st.Page("pages/🏠_首页.py", title="🏠 工作台", icon="🏥", default=True),
     ],
-    "📊 统计分析与报告": [
+    "👤 患者中心": [
+        st.Page("pages/👤_患者全息视图.py", title="👤 患者全息视图"),
+        st.Page("pages/🩺_查房助手.py", title="🩺 查房助手"),
+    ],
+    "📊 科室运营": [
+        st.Page("pages/📋_科室晨会简报.py", title="📋 科室晨会简报"),
         st.Page("pages/📊_数据概览.py", title="📊 数据概览"),
         st.Page("pages/📊_报告生成.py", title="📄 科室运营简报生成"),
         st.Page("pages/📊_周简报.py", title="📅 周简报"),

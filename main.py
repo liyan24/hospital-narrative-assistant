@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from config import settings
-from routers import data, narrative, document, weekly, knowledge_graph
+from routers import data, narrative, document, weekly, knowledge_graph, daily
 
 app = FastAPI(
     title="医院叙事生成助手 API",
@@ -26,6 +26,7 @@ app.include_router(narrative.router, prefix="/api/narrative", tags=["叙事生�
 app.include_router(document.router, prefix="/api/document", tags=["文档生成"])
 app.include_router(weekly.router, prefix="/api/weekly", tags=["周简报"])
 app.include_router(knowledge_graph.router, prefix="/api/kg", tags=["知识图谱"])
+app.include_router(daily.router, prefix="/api/daily", tags=["每日简报"])
 
 
 @app.get("/")

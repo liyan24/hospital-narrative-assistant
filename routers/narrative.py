@@ -126,12 +126,14 @@ async def generate_patient_storyline(request: PatientNarrativeRequest):
         patient_id=result["patient_id"],
         visit_count=result["visit_count"],
         narrative=result["narrative"],
+        patient=result.get("patient"),
+        timeline=result.get("timeline"),
     )
 
 
 @router.get("/patient/storyline/{patient_id}")
 async def get_patient_storyline(patient_id: str):
-    """GET方式获取患者故事线"""
+    """GET方式获取患者故事线（含结构化时间线）"""
     if not neo4j_client.test_connection():
         raise HTTPException(status_code=503, detail="Neo4j连接失败，无法查询患者数据")
 
@@ -143,6 +145,8 @@ async def get_patient_storyline(patient_id: str):
         patient_id=result["patient_id"],
         visit_count=result["visit_count"],
         narrative=result["narrative"],
+        patient=result.get("patient"),
+        timeline=result.get("timeline"),
     )
 
 
@@ -571,6 +575,21 @@ async def get_quality_control_narrative(
         summary=result["summary"],
         details=result["details"],
     )
+
+
+@router.get("/patient/{patient_id}/quality-control")
+async def get_patient_quality_control(patient_id: str):
+    """获取单个患者的质控异常提醒"""
+    if not neo4j_client.test_connection():
+        raise HTTPException(status_code=503, detail="Neo4j连接失败")
+
+    issues = quality_control_service.detect_patient_issues(patient_id)
+    return {
+        "status": "ok",
+        "patient_id": patient_id,
+        "issue_count": len(issues),
+        "issues": issues,
+    }
 
 
 # ========== P2: 科室运营深度叙事接口 ==========

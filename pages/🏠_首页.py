@@ -35,9 +35,42 @@ st.markdown(
 )
 st.divider()
 
-# 根据角色展示不同工作台
+# 加载全局风险患者（用于重点关注）
+@st.cache_data(ttl=300)
+def load_global_risk_patients():
+    return api_get("/api/narrative/risk-prediction?top_n=20", timeout=120)
+
+# 加载科室运营数据（主任/管理角色）
+@st.cache_data(ttl=300)
+def load_department_operation():
+    return api_get("/api/narrative/department-operation?period=latest_month&compare=true", timeout=120)
+
+# 加载质控异常
+@st.cache_data(ttl=300)
+def load_quality_control():
+    return api_get("/api/narrative/quality-control?rule_type=all", timeout=120)
+
+risk_data = load_global_risk_patients()
+dept_data = load_department_operation()
+qc_data = load_quality_control()
+
 if user_role == "doctor":
     render_section_header("今日工作", "快速访问您最常用的功能")
+
+    # 从风险数据中提取高风险患者数
+    high_risk_count = 0
+    if risk_data and risk_data.get("status") == "ok":
+        dist = risk_data.get("score_distribution", {})
+        high_risk_count = dist.get("极高", 0) + dist.get("高", 0)
+
+    qc_count = 0
+    if qc_data and qc_data.get("status") == "ok":
+        summary = qc_data.get("summary", {})
+        qc_count = (
+            summary.get("abnormal_los_cases", 0) +
+            summary.get("short_readmission_cases", 0) +
+            summary.get("total_drug_interaction_cases", 0)
+        )
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
@@ -45,9 +78,9 @@ if user_role == "doctor":
     with col2:
         render_metric_card("今日手术", "3", "待完成 1")
     with col3:
-        render_metric_card("质控提醒", "2", "需处理")
+        render_metric_card("质控提醒", str(qc_count), "需处理")
     with col4:
-        render_metric_card("待阅检查", "8", "新增 3")
+        render_metric_card("高风险患者", str(high_risk_count), "需关注")
 
     render_section_header("快捷入口")
     c1, c2, c3 = st.columns(3)
@@ -68,37 +101,61 @@ if user_role == "doctor":
         )
 
     render_section_header("重点关注患者", "再入院风险高或住院天数异常")
-    # 模拟重点患者列表
-    focus_patients = [
-        {"id": "P10001", "name": "张**", "risk": "高", "reason": "30天内再入院，恶性肿瘤晚期"},
-        {"id": "P10023", "name": "李**", "risk": "中", "reason": "住院天数超过 14 天"},
-        {"id": "P10056", "name": "王**", "risk": "中", "reason": "药物相互作用风险"},
-    ]
-    for p in focus_patients:
-        level = "danger" if p["risk"] == "高" else "warning"
-        color = "#EF4444" if p["risk"] == "高" else "#F59E0B"
-        st.markdown(f"""
-        <div style="background: white; border-left: 4px solid {color}; padding: 12px 16px; margin-bottom: 10px; border-radius: 0 8px 8px 0; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: 600;">{p['name']} ({p['id']})</span>
-                <span style="background: {color}20; color: {color}; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;">{p['risk']}风险</span>
+    focus_patients = []
+    if risk_data and risk_data.get("status") == "ok":
+        for p in risk_data.get("high_risk_patients", [])[:5]:
+            level = p.get("risk_level", "中")
+            level_class = "danger" if level in ["极高", "高"] else "warning"
+            reasons = p.get("risk_factors", [])
+            focus_patients.append({
+                "id": p.get("patient_id", ""),
+                "name": p.get("patient_id", "")[:4] + "**",
+                "risk": level,
+                "reason": "；".join(reasons) if reasons else "高风险评分",
+                "level_class": level_class,
+            })
+
+    if focus_patients:
+        for p in focus_patients:
+            color = "#EF4444" if p["level_class"] == "danger" else "#F59E0B"
+            st.markdown(f"""
+            <div style="background: white; border-left: 4px solid {color}; padding: 12px 16px; margin-bottom: 10px; border-radius: 0 8px 8px 0; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 600;">{p['name']} ({p['id']})</span>
+                    <span style="background: {color}20; color: {color}; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;">{p['risk']}风险</span>
+                </div>
+                <div style="color: #6B7280; font-size: 13px; margin-top: 4px;">{p['reason']}</div>
             </div>
-            <div style="color: #6B7280; font-size: 13px; margin-top: 4px;">{p['reason']}</div>
-        </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
+    else:
+        st.info("暂无高风险患者数据")
 
 elif user_role == "director":
-    render_section_header("科室运营概览", "本周关键指标一览")
+    render_section_header("科室运营概览", "本月关键指标一览")
+
+    current_metrics = {}
+    changes = {}
+    if dept_data and dept_data.get("status") == "ok":
+        current_metrics = dept_data.get("current_metrics", {}) or {}
+        changes = dept_data.get("changes", {}) or {}
 
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        render_metric_card("本周入院", "86", "环比 +5.2%")
+        visit_count = current_metrics.get("visit_count", 0)
+        visit_change = changes.get("visit_count_change", 0)
+        render_metric_card("本月入院", f"{visit_count}", f"环比 {visit_change:+.1f}%")
     with col2:
-        render_metric_card("平均住院日", "8.3", "环比 -0.5 天")
-    with col3:
-        render_metric_card("手术量", "32", "同比 +12%")
+        avg_los = current_metrics.get("avg_los", 0)
+        los_change = changes.get("avg_los_change", 0)
+        render_metric_card("平均住院日", f"{avg_los}", f"环比 {los_change:+.1f}%")
+    with c3:
+        surgery_rate = current_metrics.get("surgery_rate", 0)
+        surgery_change = changes.get("surgery_rate_change", 0)
+        render_metric_card("手术率", f"{surgery_rate}%", f"环比 {surgery_change:+.1f}%")
     with col4:
-        render_metric_card("质控异常", "7", "待整改 4")
+        readmit_rate = current_metrics.get("readmit_rate", 0)
+        readmit_change = changes.get("readmit_rate_change", 0)
+        render_metric_card("再入院率", f"{readmit_rate}%", f"环比 {readmit_change:+.1f}%")
 
     render_section_header("快捷入口")
     c1, c2, c3 = st.columns(3)
@@ -119,11 +176,19 @@ elif user_role == "director":
         )
 
     render_section_header("本周待处理事项")
-    todo_items = [
-        ("质控异常整改", "3 例缺失检查需确认", "warning"),
-        ("重点关注患者", "2 例住院超 14 天", "danger"),
-        ("周简报发布", "周一 8:00 前完成", "normal"),
-    ]
+    todo_items = []
+    if qc_data and qc_data.get("status") == "ok":
+        summary = qc_data.get("summary", {})
+        if summary.get("abnormal_los_cases", 0) > 0:
+            todo_items.append(("住院天数异常", f"{summary.get('abnormal_los_cases')} 例需确认", "warning"))
+        if summary.get("short_readmission_cases", 0) > 0:
+            todo_items.append(("30天内再入院", f"{summary.get('short_readmission_cases')} 例需关注", "danger"))
+        if summary.get("total_drug_interaction_cases", 0) > 0:
+            todo_items.append(("药物相互作用", f"{summary.get('total_drug_interaction_cases')} 例需处理", "danger"))
+
+    if not todo_items:
+        todo_items.append(("周简报发布", "周一 8:00 前完成", "normal"))
+
     for title, desc, level in todo_items:
         color = {"normal": "#10B981", "warning": "#F59E0B", "danger": "#EF4444"}[level]
         st.markdown(f"""
@@ -141,15 +206,34 @@ elif user_role == "director":
 else:  # admin
     render_section_header("全院运营概览", "多科室关键指标对比")
 
+    current_metrics = {}
+    if dept_data and dept_data.get("status") == "ok":
+        current_metrics = dept_data.get("current_metrics", {}) or {}
+
+    high_risk_count = 0
+    if risk_data and risk_data.get("status") == "ok":
+        dist = risk_data.get("score_distribution", {})
+        high_risk_count = dist.get("极高", 0) + dist.get("高", 0)
+
+    qc_count = 0
+    if qc_data and qc_data.get("status") == "ok":
+        summary = qc_data.get("summary", {})
+        qc_count = (
+            summary.get("abnormal_los_cases", 0) +
+            summary.get("short_readmission_cases", 0) +
+            summary.get("total_drug_interaction_cases", 0)
+        )
+
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        render_metric_card("在院患者", "1,248", "较昨日 +23")
+        render_metric_card("在院患者", f"{current_metrics.get('visit_count', 0):,}", "本月")
     with col2:
-        render_metric_card("本周手术", "156", "同比 +8%")
+        surgery_count = len(current_metrics.get('top_surgeries', []))
+        render_metric_card("本周手术", str(surgery_count), "Top 手术数")
     with col3:
-        render_metric_card("质控事件", "23", "待处理 9")
+        render_metric_card("质控事件", str(qc_count), "待处理")
     with col4:
-        render_metric_card("高风险患者", "41", "需关注")
+        render_metric_card("高风险患者", str(high_risk_count), "需关注")
 
     render_section_header("快捷入口")
     c1, c2, c3 = st.columns(3)

@@ -433,6 +433,123 @@ class QualityControlService:
 
         return findings
 
+    def detect_patient_issues(self, patient_id: str) -> list:
+        """查询单个患者的质控异常提醒"""
+        issues = []
+
+        # 1. 住院天数异常
+        los_query = """
+            MATCH (p:Patient {patient_id: $patient_id})-[:HAS_VISIT]->(v:Visit)
+            WITH v, v.length_of_stay AS los
+            ORDER BY los DESC
+            LIMIT 1
+            MATCH (all_v:Visit)
+            WITH v, los, avg(all_v.length_of_stay) AS mean_los, stDev(all_v.length_of_stay) AS std_los
+            WHERE los > mean_los + 2.5 * std_los
+            RETURN v.visit_id AS visit_id, v.admission_date AS admission_date, los, mean_los
+        """
+        los_recs = neo4j_client.run(los_query, {"patient_id": patient_id})
+        for r in los_recs:
+            issues.append({
+                "type": "住院天数异常",
+                "level": "warning",
+                "description": f"住院 {r['los']} 天，高于科室均值 {r['mean_los']:.1f} 天",
+                "visit_id": r["visit_id"],
+                "date": r["admission_date"],
+            })
+
+        # 2. 30天内再入院
+        readmit_query = """
+            MATCH (p:Patient {patient_id: $patient_id})-[:HAS_VISIT]->(v:Visit)
+            WITH p, v ORDER BY v.admission_date
+            WITH p, collect(v) AS visits
+            UNWIND range(0, size(visits)-2) AS i
+            WITH visits[i] AS v1, visits[i+1] AS v2
+            WHERE duration.inDays(date(v1.discharge_date), date(v2.admission_date)).days <= 30
+              AND duration.inDays(date(v1.discharge_date), date(v2.admission_date)).days >= 0
+            RETURN v2.visit_id AS visit_id, v2.admission_date AS admission_date,
+                   duration.inDays(date(v1.discharge_date), date(v2.admission_date)).days AS interval_days
+        """
+        readmit_recs = neo4j_client.run(readmit_query, {"patient_id": patient_id})
+        for r in readmit_recs:
+            issues.append({
+                "type": "30天内再入院",
+                "level": "danger",
+                "description": f"距离上次出院仅 {r['interval_days']} 天再次入院",
+                "visit_id": r["visit_id"],
+                "date": r["admission_date"],
+            })
+
+        # 3. 药物相互作用
+        drug_query = """
+            MATCH (p:Patient {patient_id: $patient_id})-[:HAS_VISIT]->(v:Visit)-[:PRESCRIBED]->(d:Drug)
+            WITH v, collect(DISTINCT d.name) AS drugs
+            RETURN v.visit_id AS visit_id, drugs
+        """
+        drug_recs = neo4j_client.run(drug_query, {"patient_id": patient_id})
+        for r in drug_recs:
+            drugs = r["drugs"]
+            for rule in self.DRUG_INTERACTION_RULES:
+                matched1 = [d for d in drugs if any(kw in d for kw in rule["drug1_keywords"])]
+                matched2 = [d for d in drugs if any(kw in d for kw in rule["drug2_keywords"])]
+                if matched1 and matched2:
+                    # 排除同一药品
+                    pair_drugs = list(set(matched1 + matched2))
+                    if len(pair_drugs) >= 2:
+                        issues.append({
+                            "type": "药物相互作用",
+                            "level": "danger",
+                            "description": f"{rule['name']}: {', '.join(pair_drugs[:2])}",
+                            "visit_id": r["visit_id"],
+                            "rule_id": rule["rule_id"],
+                        })
+
+        # 4. 缺失检查（基于规则）
+        for rule in self.MISSING_EXAM_RULES:
+            query = f"""
+                MATCH (p:Patient {{patient_id: $patient_id}})-[:HAS_VISIT]->(v:Visit)-[:DIAGNOSED_WITH]->(d:Disease)
+                WHERE d.type = 'western' AND ({" OR ".join([f"d.name CONTAINS '{kw}'" for kw in rule['disease_keywords']])})
+                OPTIONAL MATCH (v)-[:PERFORMED_EXAM]->(e:Exam)
+                WITH v, collect(DISTINCT e.name) AS exams
+                WHERE NOT any(e IN exams WHERE {' OR '.join([f"e CONTAINS '{kw}'" for kw in rule['exam_keywords']])})
+                RETURN v.visit_id AS visit_id, v.admission_date AS admission_date
+                LIMIT 5
+            """
+            missing_recs = neo4j_client.run(query, {"patient_id": patient_id})
+            for r in missing_recs:
+                issues.append({
+                    "type": "缺失检查",
+                    "level": "warning",
+                    "description": f"{rule['name']}",
+                    "visit_id": r["visit_id"],
+                    "date": r["admission_date"],
+                    "rule_id": rule["rule_id"],
+                })
+
+        # 5. 诊断-药品不匹配
+        for rule in self.DIAGNOSIS_DRUG_RULES:
+            query = f"""
+                MATCH (p:Patient {{patient_id: $patient_id}})-[:HAS_VISIT]->(v:Visit)-[:DIAGNOSED_WITH]->(d:Disease)
+                WHERE d.type = 'western' AND ({" OR ".join([f"d.name CONTAINS '{kw}'" for kw in rule['disease_keywords']])})
+                OPTIONAL MATCH (v)-[:PRESCRIBED]->(dr:Drug)
+                WITH v, collect(DISTINCT dr.name) AS drugs
+                WHERE NOT any(dr IN drugs WHERE {' OR '.join([f"dr CONTAINS '{kw}'" for kw in rule['drug_keywords']])})
+                RETURN v.visit_id AS visit_id, v.admission_date AS admission_date
+                LIMIT 5
+            """
+            mismatch_recs = neo4j_client.run(query, {"patient_id": patient_id})
+            for r in mismatch_recs:
+                issues.append({
+                    "type": "诊断-药品不匹配",
+                    "level": "warning",
+                    "description": f"{rule['name']}",
+                    "visit_id": r["visit_id"],
+                    "date": r["admission_date"],
+                    "rule_id": rule["rule_id"],
+                })
+
+        return issues
+
     # ========== 辅助方法 ==========
 
     def _normalize_disease_name(self, name: str) -> str:

@@ -46,6 +46,8 @@ class PatientNarrativeResponse(BaseModel):
     patient_id: str
     visit_count: int
     narrative: str
+    patient: Optional[dict] = None
+    timeline: Optional[dict] = None
 
 
 class PathwayNarrativeRequest(BaseModel):

@@ -43,25 +43,75 @@ if exist "%PROJECT_ROOT%\.venv\Scripts\activate.bat" (
     call "%PROJECT_ROOT%\.venv\Scripts\activate.bat"
 )
 
+:: ============================================================
+:: Subroutines (defined before main logic)
+:: ============================================================
+
+goto :main
+
+:check_port
+set "PORT_OCCUPIED=0"
+netstat -ano | findstr ":%~1 " | findstr "LISTENING" >nul
+if !errorlevel! equ 0 set "PORT_OCCUPIED=1"
+goto :eof
+
+:check_status
+call :check_port %APP_PORT%
+if !PORT_OCCUPIED! equ 1 (
+    set "BACKEND_RUNNING=true"
+) else (
+    set "BACKEND_RUNNING=false"
+)
+call :check_port %FRONTEND_PORT%
+if !PORT_OCCUPIED! equ 1 (
+    set "FRONTEND_RUNNING=true"
+) else (
+    set "FRONTEND_RUNNING=false"
+)
+goto :eof
+
+:kill_by_port
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":%~1 " ^| findstr "LISTENING"') do (
+    echo [Stop] %~2 service PID: %%a
+    taskkill /PID %%a /F >nul 2>&1
+)
+goto :eof
+
+:find_python_pid
+for /f "tokens=2 delims=," %%a in ('wmic process where "commandline like '%%python main.py%%'" get processid /format:csv ^| findstr "[0-9]"') do (
+    echo %%a
+    goto :eof
+)
+goto :eof
+
+:find_streamlit_pid
+for /f "tokens=2 delims=," %%a in ('wmic process where "commandline like '%%streamlit run streamlit_app.py%%'" get processid /format:csv ^| findstr "[0-9]"') do (
+    echo %%a
+    goto :eof
+)
+goto :eof
+
+:: ============================================================
+:: Main logic
+:: ============================================================
+:main
+
 :: Parse command
 set "COMMAND=%~1"
 if "%COMMAND%"=="" set "COMMAND=start"
 
-if "%COMMAND%"=="start" goto :start
-if "%COMMAND%"=="stop" goto :stop
-if "%COMMAND%"=="status" goto :status
-if "%COMMAND%"=="restart" goto :restart
-if "%COMMAND%"=="help" goto :help
-if "%COMMAND%"=="-h" goto :help
-if "%COMMAND%"=="--help" goto :help
+if "%COMMAND%"=="start" goto :do_start
+if "%COMMAND%"=="stop" goto :do_stop
+if "%COMMAND%"=="status" goto :do_status
+if "%COMMAND%"=="restart" goto :do_restart
+if "%COMMAND%"=="help" goto :do_help
+if "%COMMAND%"=="-h" goto :do_help
+if "%COMMAND%"=="--help" goto :do_help
 
 echo [Error] Unknown command: %COMMAND%
-goto :help
+goto :do_help
 
-:: ============================================================
-:: Start services
-:: ============================================================
-:start
+:do_start
 call :check_status
 
 if "!BACKEND_RUNNING!"=="true" (
@@ -135,17 +185,13 @@ echo       start_windows.bat status - check status
 pause
 goto :eof
 
-:: ============================================================
-:: Stop services
-:: ============================================================
-:stop
+:do_stop
 echo.
 echo ============================================================
 echo  Hospital Narrative Assistant - Stop Services
 echo ============================================================
 echo.
 
-:: Stop by PID file
 if exist "%BACKEND_PID_FILE%" (
     set /p PID=<"%BACKEND_PID_FILE%"
     if defined PID (
@@ -164,7 +210,6 @@ if exist "%FRONTEND_PID_FILE%" (
     del "%FRONTEND_PID_FILE%" >nul 2>&1
 )
 
-:: Fallback: stop by port
 call :kill_by_port %APP_PORT% "Backend"
 call :kill_by_port %FRONTEND_PORT% "Frontend"
 
@@ -173,10 +218,7 @@ echo [Done] All services stopped
 pause
 goto :eof
 
-:: ============================================================
-:: Show status
-:: ============================================================
-:status
+:do_status
 call :check_status
 
 echo.
@@ -204,19 +246,13 @@ if "!BACKEND_RUNNING!"=="true" if "!FRONTEND_RUNNING!"=="true" (
 pause
 goto :eof
 
-:: ============================================================
-:: Restart services
-:: ============================================================
-:restart
-call :stop
+:do_restart
+call :do_stop
 timeout /t 2 /nobreak >nul
-call :start
+call :do_start
 goto :eof
 
-:: ============================================================
-:: Help
-:: ============================================================
-:help
+:do_help
 echo.
 echo ============================================================
 echo  Hospital Narrative Assistant - Windows Service Manager
@@ -241,62 +277,4 @@ echo Note: For full Chinese output and better stability, use:
 echo       powershell -ExecutionPolicy Bypass -File scripts\start_windows.ps1
 echo.
 pause
-goto :eof
-
-:: ============================================================
-:: Subroutine: check port occupancy
-:: ============================================================
-:check_port
-set "PORT_OCCUPIED=0"
-netstat -ano | findstr ":%~1 " | findstr "LISTENING" >nul
-if !errorlevel! equ 0 set "PORT_OCCUPIED=1"
-goto :eof
-
-:: ============================================================
-:: Subroutine: check service status
-:: ============================================================
-:check_status
-call :check_port %APP_PORT%
-if !PORT_OCCUPIED! equ 1 (
-    set "BACKEND_RUNNING=true"
-) else (
-    set "BACKEND_RUNNING=false"
-)
-
-call :check_port %FRONTEND_PORT%
-if !PORT_OCCUPIED! equ 1 (
-    set "FRONTEND_RUNNING=true"
-) else (
-    set "FRONTEND_RUNNING=false"
-)
-goto :eof
-
-:: ============================================================
-:: Subroutine: kill process by port
-:: ============================================================
-:kill_by_port
-for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":%~1 " ^| findstr "LISTENING"') do (
-    echo [Stop] %~2 service PID: %%a
-    taskkill /PID %%a /F >nul 2>&1
-)
-goto :eof
-
-:: ============================================================
-:: Subroutine: find python main.py PID
-:: ============================================================
-:find_python_pid
-for /f "tokens=2 delims=," %%a in ('wmic process where "commandline like '%%python main.py%%'" get processid /format:csv ^| findstr "[0-9]"') do (
-    echo %%a
-    goto :eof
-)
-goto :eof
-
-:: ============================================================
-:: Subroutine: find streamlit PID
-:: ============================================================
-:find_streamlit_pid
-for /f "tokens=2 delims=," %%a in ('wmic process where "commandline like '%%streamlit run streamlit_app.py%%'" get processid /format:csv ^| findstr "[0-9]"') do (
-    echo %%a
-    goto :eof
-)
 goto :eof

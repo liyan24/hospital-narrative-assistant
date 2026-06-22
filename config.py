@@ -12,8 +12,8 @@ class Settings(BaseSettings):
     mysql_host: str = "localhost"
     mysql_port: int = 3306
     mysql_user: str = "root"
-    mysql_password: str = ""
-    mysql_database: str = "hospital_narrative"
+    mysql_password: str = "root123"
+    mysql_database: str = "hna"
 
     # Neo4j
     neo4j_uri: str = "bolt://localhost:7687"
@@ -36,8 +36,14 @@ class Settings(BaseSettings):
     app_port: int = 8000
     app_debug: bool = True
 
+    # JWT 密钥（生产环境请务必修改）
+    secret_key: str = "hospital-narrative-assistant-secret-key"
+
     # 前端配置
     frontend_port: int = 8501
+
+    # 测试环境模拟日期（留空则使用系统今天）
+    simulation_date: str = ""
 
     class Config:
         env_file = ".env"

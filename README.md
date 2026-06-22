@@ -40,14 +40,14 @@
 
 ## 🏗️ 技术栈
 
-- **前端**: Streamlit (Pages v2 多页面导航)
+- **前端**: React 18 + Vite + Ant Design + ECharts (SPA，含医生前台与后台管理)
 - **后端**: FastAPI + Uvicorn
 - **知识图谱**: Neo4j (32,694 节点 / 788,119 关系)
 - **数据库**: MySQL (结构化数据) + ChromaDB (向量检索) + JSON文件存储
 - **大模型**: OpenAI API 兼容接口
 - **LLM缓存**: 基于内容哈希的持久化缓存，支持TTL与命名空间管理
 - **文档生成**: python-docx
-- **数据可视化**: ECharts (streamlit-echarts)
+- **数据可视化**: ECharts (echarts-for-react)
 
 ---
 
@@ -83,16 +83,37 @@ cp .env.example .env
 关键配置项：
 - `OPENAI_API_KEY` / `OPENAI_BASE_URL` / `OPENAI_MODEL` — 大模型接口
 - `NEO4J_URI` / `NEO4J_USER` / `NEO4J_PASSWORD` — Neo4j连接
+- `MYSQL_HOST` / `MYSQL_PORT` / `MYSQL_USER` / `MYSQL_PASSWORD` / `MYSQL_DATABASE` — MySQL连接（数据库名已设为 `hna`）
+- `SECRET_KEY` — JWT 签名密钥（生产环境务必修改）
 - `APP_PORT` / `FRONTEND_PORT` — 服务端/前端端口（默认 8005 / 8501）
 
-### 4. 启动服务
+### 4. 初始化 MySQL 数据库
+
+确保 MySQL 已启动，并在 `.env` 中配置正确的数据库密码，然后执行：
 
 ```bash
-# 终端1：启动后端 API (http://localhost:8005)
-python main.py
+# 创建表 + 插入默认角色/权限/用户/配置/功能开关
+python scripts/init_database.py
 
-# 终端2：启动前端 (http://localhost:8501)
-streamlit run streamlit_app.py
+# 将 data/ 目录下的 Excel 业务数据导入 MySQL（首次运行耗时约 10-15 分钟）
+python scripts/import_data.py --clear --batch-size 5000
+```
+
+详细说明见 [`scripts/README.md`](scripts/README.md)。
+
+### 5. 安装并启动前端
+
+```bash
+cd frontend
+npm install
+npm run dev        # http://localhost:8501
+```
+
+### 6. 启动后端
+
+```bash
+# 终端：启动后端 API (http://localhost:8005)
+python main.py
 ```
 
 ### 5. 构建知识图谱（首次运行）
@@ -112,7 +133,16 @@ curl -X POST http://localhost:8005/api/kg/build \
 ```
 hospital-narrative-assistant/
 ├── main.py                          # FastAPI 主入口
-├── streamlit_app.py                 # Streamlit 前端导航入口
+├── streamlit_app.py                 # Streamlit 前端导航入口（遗留，已逐步迁移到 React）
+├── frontend/                        # React + Vite + Ant Design 新前端
+│   ├── src/
+│   │   ├── views/portal/            # 医生前台：工作台、患者全息视图、查房助手、晨会简报
+│   │   ├── views/admin/             # 后台管理：用户、功能开关、系统配置、缓存
+│   │   ├── layouts/                 # 前台/后台布局
+│   │   ├── api/                     # Axios API 封装
+│   │   └── stores/                  # 认证状态
+│   ├── package.json
+│   └── vite.config.js
 ├── config.py                        # Pydantic Settings 配置管理
 ├── requirements.txt                 # Python 依赖
 ├── .env / .env.example              # 环境变量
@@ -155,8 +185,11 @@ hospital-narrative-assistant/
 │   ├── data.py                      # 数据管理 / 健康检查
 │   ├── narrative.py                 # 叙事生成 + LLM缓存管理
 │   ├── document.py                  # 文档导出
-│   ├── weekly.py                    # 周简报分析与导出
-│   └── knowledge_graph.py           # 知识图谱构建/查询/统计
+    ├── weekly.py                    # 周简报分析与导出
+    ├── knowledge_graph.py           # 知识图谱构建/查询/统计
+    ├── daily.py                     # 每日简报
+    ├── auth.py                      # 登录认证
+    └── admin.py                     # 后台管理（用户/角色/配置/功能开关）
 │
 ├── pages/                           # Streamlit Pages (v2)
 │   ├── 🏠_首页.py
@@ -189,6 +222,20 @@ hospital-narrative-assistant/
 │   ├── kg_cleaned/                  # 清洗后数据缓存
 │   ├── vector_db/                   # ChromaDB向量库
 │   └── outputs/                     # 报告输出目录
+│
+├── scripts/                         # 数据库与管理脚本
+│   ├── create_tables.sql            # 创建业务表与后台管理表
+│   ├── init_data.sql                # 默认角色/权限/用户/配置/功能开关
+│   ├── init_database.py             # 一键初始化数据库
+│   ├── import_data.py               # Excel 业务数据导入 MySQL
+│   └── build_knowledge_graph.py     # 构建 Neo4j 知识图谱
+│
+├── scripts/                         # 数据库与管理脚本
+│   ├── create_tables.sql            # 创建业务表与后台管理表
+│   ├── init_data.sql                # 默认角色/权限/用户/配置/功能开关
+│   ├── init_database.py             # 一键初始化数据库
+│   ├── import_data.py               # Excel 业务数据导入 MySQL
+│   └── build_knowledge_graph.py     # 构建 Neo4j 知识图谱
 │
 └── output/                          # 示例输出文档
 ```
@@ -231,33 +278,6 @@ hospital-narrative-assistant/
 | 主诉 (ChiefComplaint) | 5,778 |
 | **关系总数** | **788,119** |
 
----
-
-## 🗺️ 功能路线图 Roadmap
-
-### 🔥 P0 - 高优先级
-- [x] **个体患者故事线生成**
-- [x] **诊疗路径模式叙事**
-
-### ⚡ P1 - 中优先级
-- [x] **疾病共现网络叙事**
-- [x] **用药模式与合理性叙事**
-- [x] **LLM + 知识图谱 RAG**（含模糊疾病名匹配）
-- [x] **交互式图谱探索**
-- [x] **再入院患者时间线叙事**
-
-### 🌟 P2 - 长期方向
-- [x] **中医特色叙事增强**
-- [x] **质控异常叙事**
-- [x] **科室运营深度叙事**
-- [x] **相似患者推荐**
-- [x] **预测性叙事 / 风险预警**
-- [x] **LLM输出缓存机制**（避免重复调用，支持TTL与命名空间管理）
-- [x] **统计报告交互优化**（默认加载最近报告、周分析即时展示、双类型导出）
-
-**全部 12+ 个功能方向已开发完成 ✅**
-
----
 
 ## 📝 开发说明
 
@@ -266,8 +286,8 @@ hospital-narrative-assistant/
 ### 扩展新功能
 1. 在 `services/` 目录下新增服务类，调用 `llm_service.chat(cache_namespace="your:namespace")`
 2. 在 `routers/narrative.py` 中注册API
-3. 在 `pages/` 下新增 Streamlit 页面文件
-4. 在 `streamlit_app.py` 中添加到导航分组
+3. 在 `frontend/src/views/` 下新增 React 页面与路由
+4. 在 `frontend/src/router/index.jsx` 中注册路由
 
 ### LLM缓存管理
 通过API或前端可管理LLM缓存：

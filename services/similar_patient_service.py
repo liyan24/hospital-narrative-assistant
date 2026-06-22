@@ -5,6 +5,7 @@
 from typing import Optional
 
 from database.neo4j_client import neo4j_client
+from database.result_cache import result_cache_store
 from services.llm_service import llm_service
 
 
@@ -26,6 +27,11 @@ class SimilarPatientService:
         基于图谱共同邻居算法寻找相似患者
         返回: 相似患者列表及相似原因
         """
+        cache_key = f"similar_patients:{patient_id}:top{top_n}:min{min_similarity}"
+        cached = result_cache_store.get(cache_key)
+        if cached is not None:
+            return cached
+
         # 1. 获取目标患者的基本信息
         target_info = self._get_patient_profile(patient_id)
         if not target_info:
@@ -55,12 +61,14 @@ class SimilarPatientService:
         # 5. 生成叙事
         narrative = self._generate_similarity_narrative(target_info, top_similar)
 
-        return {
+        result = {
             "patient_id": patient_id,
             "target_profile": target_info,
             "similar_patients": top_similar,
             "narrative": narrative,
         }
+        result_cache_store.set(cache_key, result)
+        return result
 
     def _get_patient_profile(self, patient_id: str) -> Optional[dict]:
         """获取患者画像"""

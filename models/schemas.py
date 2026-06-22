@@ -87,6 +87,7 @@ class ReadmissionResponse(BaseModel):
 
 class KGRAGRequest(BaseModel):
     question: str
+    patient_id: Optional[str] = None
 
 
 class KGRAGResponse(BaseModel):

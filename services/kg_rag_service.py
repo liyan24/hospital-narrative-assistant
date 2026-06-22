@@ -14,7 +14,7 @@ class KGRAGService:
 
     DEFAULT_PATIENT_ID = "4116-002-000000000000000000000021"
 
-    def answer(self, question: str) -> dict:
+    def answer(self, question: str, patient_id: str = None) -> dict:
         """
         回答用户问题
         返回: {"question": str, "answer": str, "sources": list, "retrieved": dict}
@@ -29,8 +29,12 @@ class KGRAGService:
 
         question = question.strip()
 
-        # 1. 意图识别 + 实体抽取
-        intent, entity, entity_type = self._parse_intent(question)
+        # 优先使用传入的 patient_id（例如查房助手场景）
+        if patient_id:
+            intent, entity, entity_type = "patient", patient_id, "patient_id"
+        else:
+            # 1. 意图识别 + 实体抽取
+            intent, entity, entity_type = self._parse_intent(question)
 
         # 2. 基于意图检索图谱子图
         retrieved = self._retrieve(intent, entity, entity_type, question)
@@ -59,10 +63,10 @@ class KGRAGService:
         # 患者ID匹配 (4116-xxx... 或类似格式)
         patient_match = re.search(r"(4116-\d{3}-\d{24})", question)
         if not patient_match:
-            # 尝试匹配 "患者" 后面的ID
-            patient_match = re.search(r"患者[\s:：]*(\S{10,})", question)
+            # 尝试匹配 "患者" 后面的ID（限定为 ID 格式：数字/字母/连字符）
+            patient_match = re.search(r"患者[\s:：]*([A-Za-z0-9\-]{20,})", question)
         if not patient_match:
-            patient_match = re.search(r"病人[\s:：]*(\S{10,})", question)
+            patient_match = re.search(r"病人[\s:：]*([A-Za-z0-9\-]{20,})", question)
 
         if patient_match:
             return "patient", patient_match.group(1), "patient_id"

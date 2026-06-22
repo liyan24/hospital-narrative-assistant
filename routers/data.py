@@ -45,6 +45,37 @@ async def list_mysql_tables():
     return {"tables": mysql_client.get_tables()}
 
 
+@router.get("/patients")
+async def list_patients(limit: int = 50, offset: int = 0):
+    """分页列出患者"""
+    rows = mysql_client.execute(
+        "SELECT patient_id, medical_record_no, age, gender, marriage, occupation FROM patients LIMIT :limit OFFSET :offset",
+        {"limit": limit, "offset": offset},
+    )
+    return {
+        "patients": [
+            {"patient_id": r[0], "medical_record_no": r[1], "age": r[2], "gender": r[3], "marriage": r[4], "occupation": r[5]}
+            for r in rows
+        ]
+    }
+
+
+@router.get("/patients/search")
+async def search_patients(keyword: str, limit: int = 20):
+    """按ID/姓名/病案号搜索患者"""
+    like = f"%{keyword}%"
+    rows = mysql_client.execute(
+        "SELECT patient_id, medical_record_no, age, gender FROM patients WHERE patient_id LIKE :kw OR medical_record_no LIKE :kw LIMIT :limit",
+        {"kw": like, "limit": limit},
+    )
+    return {
+        "patients": [
+            {"patient_id": r[0], "medical_record_no": r[1], "age": r[2], "gender": r[3]}
+            for r in rows
+        ]
+    }
+
+
 @router.get("/table/{table_name}")
 async def get_table_schema(table_name: str):
     """获取指定表的结构"""

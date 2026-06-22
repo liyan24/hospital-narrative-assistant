@@ -1,0 +1,305 @@
+{
+  "result": {
+    "patient_id": "4116-002-000000000000000000000083",
+    "target_profile": {
+      "patient_id": "4116-002-000000000000000000000083",
+      "age": 58,
+      "visit_count": 1,
+      "diseases": [
+        "积聚病::tcm",
+        "单纯性肾囊肿::western",
+        "纵隔肿物::western",
+        "肝囊肿::western"
+      ],
+      "drugs": [
+        "9%氯化钠注射液",
+        "复方斑蝥胶囊",
+        "肿瘤十项",
+        "维生素B6注射液",
+        "葡萄糖测定",
+        "中药硬膏热贴敷治疗",
+        "维生素C注射液",
+        "碘海醇注射液",
+        "左氧氟沙星氯化钠注射液",
+        "五项监测"
+      ],
+      "exams": [
+        "CT平扫"
+      ],
+      "surgeries": [],
+      "complaints": [
+        "胸前区疼痛半月余"
+      ],
+      "first_visit": "2019-06-21",
+      "last_visit": "2019-06-21"
+    },
+    "similar_patients": [
+      {
+        "patient_id": "4116-002-000000000000000000072608",
+        "score": 0.336,
+        "visit_count": 1,
+        "details": {
+          "disease_similarity": 0.167,
+          "drug_similarity": 0.312,
+          "exam_similarity": 1.0,
+          "surgery_similarity": 0.0,
+          "complaint_similarity": 0.0
+        },
+        "common_diseases": [
+          "积聚病::tcm"
+        ],
+        "common_drugs": [
+          "9%氯化钠注射液",
+          "复方斑蝥胶囊",
+          "维生素B6注射液",
+          "葡萄糖测定",
+          "中药硬膏热贴敷治疗"
+        ],
+        "common_exams": [
+          "CT平扫"
+        ]
+      },
+      {
+        "patient_id": "4116-002-000000000000000000080533",
+        "score": 0.326,
+        "visit_count": 1,
+        "details": {
+          "disease_similarity": 0.091,
+          "drug_similarity": 0.375,
+          "exam_similarity": 1.0,
+          "surgery_similarity": 0.0,
+          "complaint_similarity": 0.0
+        },
+        "common_diseases": [
+          "积聚病::tcm"
+        ],
+        "common_drugs": [
+          "9%氯化钠注射液",
+          "复方斑蝥胶囊",
+          "维生素B6注射液",
+          "葡萄糖测定",
+          "中药硬膏热贴敷治疗",
+          "维生素C注射液"
+        ],
+        "common_exams": [
+          "CT平扫"
+        ]
+      },
+      {
+        "patient_id": "4116-002-000000000000000000070244",
+        "score": 0.319,
+        "visit_count": 1,
+        "details": {
+          "disease_similarity": 0.25,
+          "drug_similarity": 0.128,
+          "exam_similarity": 1.0,
+          "surgery_similarity": 0.0,
+          "complaint_similarity": 0.0
+        },
+        "common_diseases": [
+          "积聚病::tcm",
+          "纵隔肿物::western"
+        ],
+        "common_drugs": [
+          "9%氯化钠注射液",
+          "复方斑蝥胶囊",
+          "维生素B6注射液",
+          "葡萄糖测定",
+          "维生素C注射液",
+          "碘海醇注射液"
+        ],
+        "common_exams": [
+          "CT平扫"
+        ]
+      },
+      {
+        "patient_id": "4116-002-000000000000000000043509",
+        "score": 0.317,
+        "visit_count": 1,
+        "details": {
+          "disease_similarity": 0.167,
+          "drug_similarity": 0.235,
+          "exam_similarity": 1.0,
+          "surgery_similarity": 0.0,
+          "complaint_similarity": 0.0
+        },
+        "common_diseases": [
+          "积聚病::tcm"
+        ],
+        "common_drugs": [
+          "左氧氟沙星氯化钠注射液",
+          "9%氯化钠注射液",
+          "复方斑蝥胶囊",
+          "葡萄糖测定"
+        ],
+        "common_exams": [
+          "CT平扫"
+        ]
+      },
+      {
+        "patient_id": "4116-002-000000000000000000075281",
+        "score": 0.315,
+        "visit_count": 1,
+        "details": {
+          "disease_similarity": 0.143,
+          "drug_similarity": 0.259,
+          "exam_similarity": 1.0,
+          "surgery_similarity": 0.0,
+          "complaint_similarity": 0.0
+        },
+        "common_diseases": [
+          "积聚病::tcm"
+        ],
+        "common_drugs": [
+          "9%氯化钠注射液",
+          "复方斑蝥胶囊",
+          "维生素B6注射液",
+          "葡萄糖测定",
+          "中药硬膏热贴敷治疗",
+          "维生素C注射液",
+          "五项监测"
+        ],
+        "common_exams": [
+          "CT平扫"
+        ]
+      },
+      {
+        "patient_id": "4116-002-000000000000000000082473",
+        "score": 0.313,
+        "visit_count": 1,
+        "details": {
+          "disease_similarity": 0.2,
+          "drug_similarity": 0.172,
+          "exam_similarity": 1.0,
+          "surgery_similarity": 0.0,
+          "complaint_similarity": 0.0
+        },
+        "common_diseases": [
+          "积聚病::tcm"
+        ],
+        "common_drugs": [
+          "9%氯化钠注射液",
+          "复方斑蝥胶囊",
+          "肿瘤十项",
+          "葡萄糖测定",
+          "中药硬膏热贴敷治疗"
+        ],
+        "common_exams": [
+          "CT平扫"
+        ]
+      },
+      {
+        "patient_id": "4116-002-000000000000000000074996",
+        "score": 0.308,
+        "visit_count": 1,
+        "details": {
+          "disease_similarity": 0.125,
+          "drug_similarity": 0.258,
+          "exam_similarity": 1.0,
+          "surgery_similarity": 0.0,
+          "complaint_similarity": 0.0
+        },
+        "common_diseases": [
+          "积聚病::tcm"
+        ],
+        "common_drugs": [
+          "9%氯化钠注射液",
+          "复方斑蝥胶囊",
+          "肿瘤十项",
+          "维生素B6注射液",
+          "葡萄糖测定",
+          "中药硬膏热贴敷治疗",
+          "维生素C注射液",
+          "五项监测"
+        ],
+        "common_exams": [
+          "CT平扫"
+        ]
+      },
+      {
+        "patient_id": "4116-002-000000000000000000353045",
+        "score": 0.307,
+        "visit_count": 1,
+        "details": {
+          "disease_similarity": 0.2,
+          "drug_similarity": 0.15,
+          "exam_similarity": 1.0,
+          "surgery_similarity": 0.0,
+          "complaint_similarity": 0.0
+        },
+        "common_diseases": [
+          "单纯性肾囊肿::western",
+          "肝囊肿::western"
+        ],
+        "common_drugs": [
+          "肿瘤十项",
+          "9%氯化钠注射液",
+          "碘海醇注射液"
+        ],
+        "common_exams": [
+          "CT平扫"
+        ]
+      },
+      {
+        "patient_id": "4116-002-000000000000000000075582",
+        "score": 0.307,
+        "visit_count": 2,
+        "details": {
+          "disease_similarity": 0.143,
+          "drug_similarity": 0.229,
+          "exam_similarity": 1.0,
+          "surgery_similarity": 0.0,
+          "complaint_similarity": 0.0
+        },
+        "common_diseases": [
+          "积聚病::tcm"
+        ],
+        "common_drugs": [
+          "9%氯化钠注射液",
+          "复方斑蝥胶囊",
+          "肿瘤十项",
+          "维生素B6注射液",
+          "葡萄糖测定",
+          "中药硬膏热贴敷治疗",
+          "维生素C注射液",
+          "左氧氟沙星氯化钠注射液"
+        ],
+        "common_exams": [
+          "CT平扫"
+        ]
+      },
+      {
+        "patient_id": "4116-002-000000000000000000014271",
+        "score": 0.305,
+        "visit_count": 4,
+        "details": {
+          "disease_similarity": 0.167,
+          "drug_similarity": 0.186,
+          "exam_similarity": 1.0,
+          "surgery_similarity": 0.0,
+          "complaint_similarity": 0.0
+        },
+        "common_diseases": [
+          "积聚病::tcm",
+          "肝囊肿::western"
+        ],
+        "common_drugs": [
+          "9%氯化钠注射液",
+          "复方斑蝥胶囊",
+          "肿瘤十项",
+          "维生素B6注射液",
+          "葡萄糖测定",
+          "中药硬膏热贴敷治疗",
+          "维生素C注射液",
+          "碘海醇注射液"
+        ],
+        "common_exams": [
+          "CT平扫"
+        ]
+      }
+    ],
+    "narrative": "基于患者相似度分析数据，为您推荐 **Top 3 患者（ID: 4116-002-000000000000000000070244）** 作为最相似参考病例。\n\n---\n\n### 推荐理由（相似原因）\n\n1. **疾病相似度最高**：该患者的疾病相似度为0.250（高于Top1、2），共同诊断包括 **“积聚病（tcm）”** 和 **“纵隔肿物（western）”**，与目标患者的两个核心诊断（中医癥积、西医纵隔占位）完全匹配，提示疾病背景和治疗背景最为接近。\n2. **用药重叠度高**：共同用药涵盖 **复方斑蝥胶囊、9%氯化钠注射液、维生素B6注射液、葡萄糖测定、维生素C注射液**。其中复方斑蝥胶囊为抗肿瘤中成药，是目标患者治疗方案的关键药物；维生素C/B6及葡萄糖测定提示前两个患者在支持对症处理上策略一致。\n3. **就诊模式一致**：均为首次就诊（就诊次数1），提示均为新诊断或初治阶段，经验可早期借鉴。\n\n---\n\n### 可借鉴的诊疗经验\n\n1. **中西医结合抗肿瘤策略**：参考病例在 **积聚病（中医癥积）** 基础上，同时处理 **纵隔肿物**，采用了 **复方斑蝥胶囊** 口服+ **中药硬膏热贴敷**（虽未列出，但可根据Top1、2推断可能使用）的中西医联合方案，兼顾全身攻邪与局部外治，目标患者可酌情引入类似思路。\n2. **支持治疗规范化**：使用 **维生素C+维生素B6+葡萄糖** 作为基础营养支持，在肿瘤治疗中可减轻药物不良反应、改善能量代谢，该组合值得参考。\n3. **进一步检查提示**：目标患者已开具 **肿瘤十项**，结合参考病例疾病特征，建议重点评估纵隔肿物的良恶性及中医辨证分型（积聚病多为气滞血瘀或痰瘀互结），必要时行增强CT或病理活检以制定精准方案。\n\n---\n\n**⚠️ 注意**：以上推荐基于数据相似性，不能替代临床医生对患者个体情况的综合判断。纵隔肿物、肾囊肿、肝囊肿的良恶性及治疗优先级需通过影像学、肿瘤标志物及病理明确。"
+  },
+  "created_at": "2026-06-22T07:09:16.290923+00:00",
+  "expires_at": "2026-07-02T07:09:16.290923+00:00"
+}

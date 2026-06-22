@@ -4,6 +4,33 @@ from sqlalchemy.orm import sessionmaker
 from config import settings
 
 
+class _QueryResult:
+    """统一 SQL 执行结果，兼容 SELECT / INSERT / UPDATE / DELETE"""
+
+    def __init__(self, result, rows=None, lastrowid=None, rowcount=None):
+        self._rows = rows
+        self.lastrowid = lastrowid
+        self.rowcount = rowcount
+        self._result = result
+
+    def fetchall(self):
+        if self._rows is not None:
+            return self._rows
+        try:
+            return self._result.fetchall()
+        except Exception:
+            return []
+
+    def __iter__(self):
+        return iter(self.fetchall())
+
+    def __getitem__(self, index):
+        return self.fetchall()[index]
+
+    def __len__(self):
+        return len(self.fetchall())
+
+
 class MySQLClient:
     def __init__(self):
         self.connection_string = (
@@ -20,7 +47,18 @@ class MySQLClient:
     def execute(self, sql: str, params=None):
         with self.get_session() as session:
             result = session.execute(text(sql), params or {})
-            return result.fetchall()
+            session.commit()
+            try:
+                rows = result.fetchall()
+                return _QueryResult(result, rows=rows)
+            except Exception:
+                # INSERT / UPDATE / DELETE 等不返回行的语句
+                return _QueryResult(
+                    result,
+                    rows=[],
+                    lastrowid=getattr(result, 'lastrowid', None),
+                    rowcount=getattr(result, 'rowcount', 0),
+                )
 
     def get_tables(self):
         """获取数据库中所有表名"""

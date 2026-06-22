@@ -34,3 +34,10 @@ requests
 
 # 向量处理 (用于RAG)
 sentence-transformers
+
+# 用户认证
+bcrypt
+PyJWT
+
+# Excel 读取
+openpyxl

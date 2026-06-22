@@ -5,6 +5,7 @@
 from typing import Optional
 
 from database.neo4j_client import neo4j_client
+from database.result_cache import result_cache_store
 from services.llm_service import llm_service
 
 
@@ -23,6 +24,11 @@ class RiskPredictionService:
 
     def _analyze_single_patient(self, patient_id: str) -> dict:
         """分析单个患者的风险"""
+        cache_key = f"risk_prediction:{patient_id}"
+        cached = result_cache_store.get(cache_key)
+        if cached is not None:
+            return cached
+
         # 获取患者完整数据
         recs = neo4j_client.run("""
             MATCH (p:Patient {patient_id: $pid})-[:HAS_VISIT]->(v:Visit)
@@ -126,7 +132,9 @@ class RiskPredictionService:
         }
 
         narrative = self._generate_single_patient_risk_narrative(data)
-        return {**data, "narrative": narrative}
+        result = {**data, "narrative": narrative}
+        result_cache_store.set(cache_key, result)
+        return result
 
     def _analyze_global_risks(self, top_n: int = 20) -> dict:
         """分析全局高风险患者"""

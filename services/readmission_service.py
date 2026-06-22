@@ -5,6 +5,7 @@
 
 from typing import Dict, List, Optional
 from database.neo4j_client import neo4j_client
+from database.result_cache import result_cache_store
 from services.llm_service import llm_service
 
 
@@ -137,6 +138,11 @@ class ReadmissionService:
 
     def generate_patient_narrative(self, patient_id: str) -> Dict:
         """为单个再入院患者生成长纵向叙事"""
+        cache_key = f"readmission_patient:{patient_id}"
+        cached = result_cache_store.get(cache_key)
+        if cached is not None:
+            return cached
+
         visits = self._get_patient_visits_summary(patient_id)
         if not visits:
             return {"error": "患者不存在或无任何就诊记录"}
@@ -157,12 +163,14 @@ class ReadmissionService:
             cache_namespace=f"readmission:patient:{patient_id}",
         )
 
-        return {
+        result = {
             "patient_id": patient_id,
             "visit_count": len(visits),
             "narrative": narrative,
             "visits": visits,
         }
+        result_cache_store.set(cache_key, result)
+        return result
 
     def generate_summary_narrative(self) -> Dict:
         """生成再入院整体分析叙事"""

@@ -5,6 +5,7 @@
 from datetime import datetime, date
 from typing import Dict, List, Optional
 from database.neo4j_client import neo4j_client
+from config import settings
 
 
 class DailyBriefingService:
@@ -13,7 +14,7 @@ class DailyBriefingService:
     def generate_briefing(self, briefing_date: Optional[str] = None) -> Dict:
         """生成指定日期的晨会简报"""
         if briefing_date is None:
-            briefing_date = date.today().isoformat()
+            briefing_date = settings.simulation_date or date.today().isoformat()
 
         return {
             "date": briefing_date,

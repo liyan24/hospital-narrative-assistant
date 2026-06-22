@@ -349,7 +349,7 @@ async def kg_rag_ask(request: KGRAGRequest):
     if not neo4j_client.test_connection():
         raise HTTPException(status_code=503, detail="Neo4j连接失败")
 
-    result = kg_rag_service.answer(request.question)
+    result = kg_rag_service.answer(request.question, patient_id=request.patient_id)
     return KGRAGResponse(
         question=result["question"],
         answer=result["answer"],
@@ -367,7 +367,7 @@ async def kg_rag_ask_get(question: str):
     if not question or not question.strip():
         raise HTTPException(status_code=400, detail="问题不能为空")
 
-    result = kg_rag_service.answer(question)
+    result = kg_rag_service.answer(question, patient_id=None)
     return KGRAGResponse(
         question=result["question"],
         answer=result["answer"],

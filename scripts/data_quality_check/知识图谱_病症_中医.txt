@@ -1,0 +1,1029 @@
+# 知识图谱疾病/病症列表 - 中医（共 1027 条）
+# 格式：名称 | 来源 | 频次
+积聚类病 | admission,discharge | 3915
+肺积 | admission,discharge | 2620
+肺积 痰瘀互结证 | admission,discharge | 1504
+血证 | admission,discharge | 1433
+癌病 | discharge | 1334
+噎膈病 | discharge | 1053
+肺积 痰瘀互结 | admission | 823
+积聚病 | discharge | 539
+肺肿瘤 | admission,discharge | 484
+乳癌 | discharge | 419
+髓劳 | admission,discharge | 363
+内科病 | admission,discharge | 353
+积聚 正虚毒结证 | admission | 331
+积聚 正虚瘀结证 | admission | 300
+血证 气血亏虚 | admission | 282
+血症 气血亏虚证 | admission | 242
+血证 气血亏虚证 | admission | 221
+血症 气血亏虚 | admission | 203
+噎嗝 气阴两虚证 | admission | 188
+肺肿瘤 痰瘀互结证 | admission | 186
+积聚 痰瘀互结证 | admission | 180
+脑瘤 | admission,discharge | 171
+积聚 脾胃虚弱证 | admission | 166
+积聚 痰瘀互结 | admission | 157
+噎膈 正虚毒结证 | admission | 148
+积聚 正虚毒结 | admission | 146
+血症 气血亏虚型 | admission | 142
+脑瘤 瘀血阻络证 | admission | 133
+积聚 肝郁脾虚证 | admission | 129
+虚劳 气血亏虚证 | admission | 127
+癥瘕病 | discharge | 125
+结肠恶性肿瘤 | discharge | 123
+积聚 痰结毒滞证 | admission | 113
+髓劳 气血亏虚 | admission | 111
+肝积 气滞水停 | admission | 105
+积聚 气血两虚证 | admission | 99
+乳癖 | discharge | 98
+积聚病 痰瘀互结证 | admission | 98
+乳癌 脾胃虚弱证 | admission | 95
+瘰疬 气血两虚证 | admission | 94
+肺积 痰结毒滞证 | admission | 94
+瘰疬 | admission,discharge | 90
+虚劳类病 | discharge | 88
+血证类 气血亏虚 | admission | 85
+积聚病 肺气亏虚证 | admission | 84
+肺肿瘤 痰瘀互结 | admission | 84
+乳岩 | admission,discharge | 81
+积证 正虚毒结证 | admission | 80
+噎膈 痰瘀互结 | admission | 78
+乳癌病 | discharge | 75
+肺积 气阴两虚证 | admission,discharge | 75
+乳癖 气滞血瘀 | admission | 74
+积聚 肝郁血虚证 | admission | 74
+肠癌 脾肾阳虚证 | admission | 73
+髓劳 气血两虚证 | admission | 73
+积聚病 正虚瘀结证 | admission | 72
+血劳 | discharge | 70
+积聚 气阴两虚证 | admission,discharge | 69
+肝积 | admission,discharge | 65
+肝积 痰瘀互结 | admission | 65
+髓劳 气血亏虚证 | admission | 64
+噎嗝 气阴两虚 | admission | 62
+肺积 肺脾气虚症 | admission | 59
+乳核 | discharge | 58
+噎膈病 气虚血瘀症 | admission | 57
+瘰疬病 | discharge | 57
+积聚 气滞血瘀证 | admission | 53
+乳核 肝气郁结证 | admission | 52
+肠覃 | discharge | 52
+乳岩 痰瘀互结证 | admission | 51
+噎嗝 | admission,discharge | 51
+噎膈 气阴两虚证 | admission | 51
+血症 气阴两虚证 | admission | 51
+乳岩 肝郁脾虚证 | admission | 50
+噎膈病 气阴两虚证 | admission | 50
+血证类 气血亏虚证 | admission | 50
+内科瘤病 | discharge | 48
+噎膈 脾胃气虚 | admission | 45
+积聚 气阴两虚 | admission | 44
+鼻窦癌 脾肾阳虚 | admission | 44
+癥瘕 正虚毒结证 | admission | 43
+肠痹 | discharge | 42
+乳癌 正虚毒结 | admission | 38
+癥瘕 | admission,discharge | 38
+积聚 气滞血瘀型 | admission | 38
+骨瘤 | discharge | 38
+嗝噎 气阴两虚证 | admission | 37
+癃闭 | admission,discharge | 37
+癥瘕 气阴两虚 | admission | 35
+乳癌病 脾胃虚弱证 | admission | 34
+肠痹 脾肾阳虚证 | admission | 33
+肠蕈 痰瘀互结 | admission | 33
+乳岩 脾胃虚弱证 | admission | 32
+乳癌 气虚血瘀 | admission | 32
+癥痂 正虚瘀结证 | admission | 31
+积聚病 正虚毒结证 | admission | 31
+乳癖病 | discharge | 30
+积聚病 脾肾气虚证 | admission | 30
+肝积 正虚瘀结证 | admission,discharge | 30
+脑瘤 痰瘀互结证 | admission | 30
+内科病 气血亏虚 | admission | 29
+瘰疬 气血亏虚证 | admission | 29
+积证 正虚瘀结证 | admission | 29
+肺积 痰淤互结症 | admission | 29
+内科瘤病 气血两虚证 | admission | 28
+骨瘤 痰结毒滞证 | admission | 28
+肠癖 | admission,discharge | 27
+脑瘤 痰瘀互结 | admission | 27
+乳岩 气阴两虚证 | admission | 26
+噎膈 气阴两虚 | admission | 26
+噎膈 阴虚毒结证 | admission | 26
+积聚 气阴两虚症 | admission | 26
+积聚 热毒内蕴证 | admission | 26
+积聚病 肺气虚衰证 | admission | 26
+肺积 肺气亏虚证 | admission | 26
+肺积病 痰瘀互结证 | admission | 26
+骨痹 | discharge | 26
+髓劳 气血亏虚型 | admission | 26
+乳岩 正虚毒结证 | admission | 25
+乳癌病 正虚毒结证 | admission | 25
+癃闭 气虚血瘀 | admission | 25
+积聚 气滞湿阻证 | admission | 25
+积聚 脾虚痰湿证 | admission | 25
+积聚类病 气虚血瘀型 | admission | 25
+噎膈 痰瘀互结证 | admission | 24
+积聚病 气滞血瘀证 | admission | 24
+积证 证虚毒结证 | admission | 24
+骨痹 气血两虚证 | admission | 24
+内科病 气血亏虚证 | admission | 23
+内科癌病 痰瘀互结证 | admission | 23
+积病 | admission,discharge | 23
+骨疽病，气血瘀阻证 | admission | 23
+乳岩 气虚血瘀 | admission | 22
+积病 脾虚湿蕴证 | admission | 22
+中风病 | discharge | 21
+喘病 | discharge | 21
+积聚 气虚血瘀 | admission | 21
+积聚 肝郁气滞证 | admission | 21
+积聚 脾肾两虚证 | admission | 21
+肝实证 | discharge | 21
+内科癌病 正虚瘀结证 | admission | 20
+嗝噎 脾虚痰湿证 | admission | 20
+积聚 肾精亏虚 | admission | 20
+积聚病 肺气亏虚 | admission | 20
+肠癖 脾肾阳虚证 | admission | 20
+胃恶性肿瘤 | admission,discharge | 20
+中风 阴虚风动证 | admission | 19
+乳岩 正虚毒结型 | admission | 19
+宫颈癌 正虚瘀结证 | admission | 19
+积聚 气滞水停 | admission | 19
+虚劳 气血亏虚 | admission | 19
+喘病 痰浊阻肺证 | admission | 18
+肠癌 气滞血瘀证 | admission | 18
+肺积 肺脾两虚证 | admission | 18
+髓劳 肝肾阴虚型 | admission | 18
+癥瘕 正虚瘀结证 | admission | 17
+积聚 痰浊内阻证 | admission | 17
+积聚病 气阴两虚证 | admission | 17
+积聚类 气阴两虚证 | admission | 17
+肺积 痰浊瘀肺证 | admission | 17
+乳岩 正虚毒结 | admission | 16
+癥瘕 正虚毒结 | admission | 16
+积聚病 脾胃虚弱证 | admission | 16
+积聚类病 气滞血瘀 | admission | 16
+肝恶性肿瘤 | admission,discharge | 16
+肝积 气血亏虚证 | admission | 16
+肺癌 痰瘀互结证 | admission | 16
+肺积 肺气虚衰证 | admission | 16
+血症 气血两虚症 | admission | 16
+血癌 正虚毒结证 | admission | 16
+贫血 | discharge | 16
+乳岩 痰瘀互结 | admission | 15
+内科癌病 气滞血瘀证 | admission | 15
+癥痂 肝郁血虚证 | admission | 15
+肺肿瘤 正虚毒结证 | admission | 15
+肺肿瘤 气阴两虚证 | admission | 15
+血证 气不摄血证 | admission | 15
+噎嗝 正虚毒结证 | admission | 14
+积聚 湿热蕴结证 | admission | 14
+肝肿瘤 | discharge | 14
+虚劳 | admission,discharge | 14
+黄疸 | discharge | 14
+乳岩 气滞血瘀证 | admission | 13
+乳岩 脾虚肝郁证 | admission | 13
+卵巢恶性肿瘤 | admission,discharge | 13
+噎膈 | admission,discharge | 13
+瘰疬病 阴虚内热证 | admission | 13
+积聚 湿毒蕴结证 | admission | 13
+积聚 瘀血阻络证 | admission | 13
+肺积 气阴两虚 | admission | 13
+胃癌 正虚瘀结证 | admission | 13
+虚劳 气血亏虚型 | admission | 13
+血癌 气血亏虚证 | admission | 13
+血证 气阴两虚证 | admission | 13
+乳岩 肝郁痰凝证 | admission | 12
+瘿病 痰瘀互结证 | admission | 12
+癃闭病 | discharge | 12
+癥瘕 气阴两虚证 | admission | 12
+积聚 气阴亏虚 | admission | 12
+积聚病 肺脾气虚症 | admission | 12
+肝积 气滞水停证 | admission | 12
+肝积 气滞血瘀证 | admission | 12
+虚劳 肾阴亏虚证 | admission | 12
+血症 气虚亏虚型 | admission | 12
+厉疽 | discharge | 11
+厉疽 痰瘀互结 | admission | 11
+噎嗝 痰瘀互结 | admission | 11
+恶核 | discharge | 11
+积聚 气血亏虚症 | admission | 11
+积聚类 脾肾亏虚证 | admission | 11
+肠蕈 痰瘀互结症 | admission | 11
+肺积 痰瘀互结症 | admission | 11
+血证类 气虚亏虚型 | admission | 11
+鼻渊 | discharge | 11
+鼻渊 气血瘀阻 | admission | 11
+鼻窦肿物 | discharge | 11
+内科癌病 气阴两虚证 | admission | 10
+卵巢癌 正虚毒结证 | admission | 10
+嗝噎 痰瘀互结证 | admission | 10
+噎嗝 正虚毒结 | admission | 10
+噎膈病 正虚毒结证 | admission | 10
+噎膈病 气阴两虚症 | admission | 10
+积聚 正虚瘀结 | admission | 10
+积聚 气滞血瘀 | admission | 10
+积证 热毒内蕴证 | admission | 10
+肝病 | discharge | 10
+肠蕈 正虚毒结 | admission | 10
+胰腺癌 痰瘀互结证 | admission | 10
+血症 气阴两虚型 | admission | 10
+黄疸 痰瘀互结 | admission | 10
+乳癌 脾胃虚弱 | admission | 9
+乳积 | discharge | 9
+内科癌病 气滞湿阻证 | admission | 9
+慢性髓劳 气血亏虚 | admission | 9
+甲状腺癌 痰瘀互结 | admission | 9
+癥瘕 气阴两虚症 | admission | 9
+癥瘕病 正虚毒结证 | admission | 9
+积聚 气滞水停证 | admission | 9
+紫癜病 | discharge | 9
+肝积 气滞血瘀型 | admission | 9
+肺恶性肿瘤 | admission,discharge | 9
+肺积 痰瘀阻肺证 | admission | 9
+膀胱癌(脾气虚弱型) | admission | 9
+骨痹 气血两虚型 | admission | 9
+噎膈 正虚毒结 | admission | 8
+瘰疬 正虚毒结证 | admission,discharge | 8
+瘰疬 气血亏虚 | admission | 8
+癃闭 湿热蕴结 | admission | 8
+癥痂 | admission,discharge | 8
+积聚 热毒蕴结证 | admission | 8
+积聚 脾肾气虚证 | admission | 8
+积聚 脾肾阳虚证 | admission | 8
+积证 瘀血阻络证 | admission | 8
+缺血性中风 风痰阻络证 | admission | 8
+肝积 脾胃虚弱证 | admission | 8
+肝肿瘤 气滞血瘀 | admission | 8
+乳腺癌 脾胃虚弱证 | admission | 7
+内科癌病 正虚毒结证 | admission | 7
+内科癌病 痰结毒滞证 | admission | 7
+噎嗝 脾胃气虚证 | admission | 7
+宫颈癌 湿毒蕴结证 | admission | 7
+宫颈癌(正虚瘀结证) | admission | 7
+慢性髓劳 气血亏虚证 | admission | 7
+淋巴瘤 | admission,discharge | 7
+淋巴瘤 痰瘀互结证 | admission | 7
+痞满 | admission,discharge | 7
+积聚 气血亏虚证 | admission | 7
+积聚 气血瘀阻 | admission | 7
+积聚 血瘀阻络证 | admission | 7
+积聚类病 肝郁脾虚证 | admission | 7
+积证，正虚毒结证 | admission | 7
+肝积 正虚毒结 | admission | 7
+肠痈病 | admission,discharge | 7
+肺积 肺脾气虚证 | admission | 7
+肺肿瘤 痰瘀互结症 | admission | 7
+胃癌 气阴两虚证 | admission | 7
+胃癌 脾胃亏虚证 | admission | 7
+胃肿瘤 脾虚痰湿证 | admission | 7
+脑瘤 瘀阻脑络 | admission | 7
+血症 正虚瘀结证 | admission | 7
+血症 气血两虚 | admission | 7
+血证类 肾阴亏虚证 | admission | 7
+髓劳 脾肾阳虚之证 | admission | 7
+中风 中经络 风痰阻络证 | admission | 6
+乳癌 痰瘀互结证 | admission | 6
+乳癖 气滞血瘀证 | admission | 6
+内科病 气虚亏虚型 | admission | 6
+内科病 气血亏虚型 | admission | 6
+内科病 肾阴亏虚证 | admission | 6
+内科癌病 正虚毒结症 | admission | 6
+内科癌病 瘀血阻络证 | admission | 6
+内科癌病 肝郁气滞 | admission | 6
+嗝噎 | admission,discharge | 6
+噎嗝 痰气互结证 | admission | 6
+噎嗝 阴虚毒结证 | admission | 6
+子宫内膜癌 正虚毒结证 | admission | 6
+恶核病 痰瘀互结 | admission | 6
+瘰疬 痰瘀互结证 | admission | 6
+癥痂 气滞血瘀证 | admission | 6
+癥瘕病 痰瘀互结证 | admission | 6
+积聚 正虚痰凝证 | admission | 6
+积聚 气血双亏证 | admission | 6
+积聚 气阴亏虚型 | admission | 6
+积聚类 正虚毒结证 | admission | 6
+肝积 气滞湿阻证 | admission | 6
+肠癖 气血两虚症 | admission | 6
+肠覃 痰瘀互结症 | admission | 6
+肺肿瘤 痰结毒滞证 | admission | 6
+肾积(气阴亏虚型) | admission,discharge | 6
+胃脘痛 脾胃气虚证 | admission | 6
+腹痛 | discharge | 6
+舌岩 | discharge | 6
+舌岩 肾虚蕴毒 | admission | 6
+舌根癌 痰瘀互结证 | admission | 6
+虚劳 气血两虚型 | admission | 6
+血症 气不摄血证 | admission | 6
+血症 气血两虚证 | admission | 6
+血证 脾胃虚弱证 | admission | 6
+食管肿物 正虚毒结证 | admission | 6
+乳腺肿瘤 | discharge | 5
+亡血证 | discharge | 5
+内科瘤病 气滞血瘀证 | admission | 5
+内科瘤病 痰瘀互结证 | admission | 5
+内科癌病 正虚毒结型 | admission | 5
+内科癌病 脾肾阳虚证 | admission | 5
+内科癌病类 | discharge | 5
+再生障碍性贫血 | discharge | 5
+噎嗝 脾胃气虚 | admission | 5
+噎膈 气血亏虚 | admission | 5
+瘰疬 痰湿蕴结证 | admission | 5
+瘰疬 肾精亏虚 | admission | 5
+癃闭 湿热蕴结证 | admission | 5
+癥瘕 正虚瘀结 | admission | 5
+癥瘕 湿热蕴结证 | admission | 5
+积聚 气血亏虚 | admission | 5
+积聚 气血双亏 | admission | 5
+积聚 痰结毒滞 | admission | 5
+积聚 瘀血内阻 | admission | 5
+积聚类病 肝胃不和证 | admission | 5
+缺血性中风 | discharge | 5
+缺血性中风 中经络 风痰阻络 | admission | 5
+肺癌 (痰瘀互结证) | admission | 5
+肺积 痰淤互结 | admission | 5
+肺肿瘤 肺脾气虚症 | admission | 5
+胃肿瘤 | discharge | 5
+膀胱癌 脾肾亏虚 | admission | 5
+血虚证 | discharge | 5
+血证 血热妄行证 | admission | 5
+血证类 气血亏虚型 | admission | 5
+贲门癌 正虚瘀结证 | admission | 5
+颊粘膜癌 痰瘀互结证 | admission,discharge | 5
+食管癌 脾虚痰湿证 | admission | 5
+骨疽 | admission | 5
+鼻咽癌 脾肾阳虚 | admission | 5
+鼻窦癌 阴液亏虚证 | admission | 5
+乳腺癌 肝郁脾虚证 | admission | 4
+免疫性血小板减少 | admission,discharge | 4
+内科病 气血亏虚症 | admission | 4
+内科癌病 脾胃虚弱证 | admission | 4
+内科癌症 痰瘀互结 | admission | 4
+咳嗽 | discharge | 4
+嗝噎 正虚毒结证 | admission | 4
+嗝噎 阴虚血瘀证 | admission | 4
+噎膈病 痰气互结证 | admission | 4
+噎膈病 痰瘀互结 | admission | 4
+宫颈恶性肿瘤 | admission,discharge | 4
+淋巴瘤 气血两虚证 | admission | 4
+瘿类病 | discharge | 4
+癥痂 正虚毒结证 | admission | 4
+直肠癌 正虚毒结证 | admission | 4
+眩晕 风阳上扰证 | admission | 4
+积聚 正虚毒结症 | admission | 4
+积聚 脾肾阳虚 | admission | 4
+积聚病 气滞湿阻证 | admission | 4
+积聚病 气血两虚证 | admission | 4
+积聚病 脾虚痰湿证 | admission | 4
+积证 痰瘀互结证 | admission | 4
+紫癜病 血热妄行证 | admission | 4
+肠痹 正虚瘀结证 | admission | 4
+肠癌 正虚毒结证 | admission | 4
+肠肿瘤 | discharge | 4
+肠蕈 气虚血瘀 | admission | 4
+肺积 痰瘀互结型 | admission | 4
+肺积 瘀血阻络证 | admission | 4
+肺积 肺脾两虚症 | admission | 4
+肺积 阴虚毒热证 | admission | 4
+肺肿瘤 气阴两虚 | admission | 4
+肺肿瘤 痰浊阻肺证 | admission | 4
+肾岩 气阴两虚 | admission | 4
+肾积 | admission | 4
+胃脘痛病 | discharge | 4
+胆囊占位 气滞湿阻证 | admission | 4
+胸痹 心血淤阻证 | admission | 4
+脑漏 | admission | 4
+膀胱肿瘤 | discharge | 4
+萎黄病 | discharge | 4
+血症 邪盛正虚证 | admission | 4
+血证 气血亏虚型 | admission | 4
+贲门占位 脾虚痰湿证 | admission | 4
+骨痹病 | discharge | 4
+髓劳 气阴两虚证 | admission | 4
+内科病 气阴两虚证 | admission | 3
+内科癌 痰瘀互结证 | admission | 3
+内科癌病 气滞水停证 | admission | 3
+内科癌病 气血亏虚证 | admission | 3
+内科癌病 湿热蕴结 | admission | 3
+内科癌病 脾肾阳虚之证 | admission | 3
+咳嗽 风寒表实证 | admission | 3
+噎膈 气血双亏 | admission | 3
+噎膈 脾胃气虚证 | admission | 3
+噎膈病 痰瘀互结证 | admission | 3
+噎膈病 脾虚湿盛证 | admission | 3
+噎膈病 脾虚湿蕴证 | admission | 3
+噎隔 正虚毒结证 | admission,discharge | 3
+子宫癌 正虚瘀结 | admission,discharge | 3
+气喘 | discharge | 3
+淋巴瘤 气虚痰结证 | admission | 3
+痹证类病 寒湿痹阻证 | admission | 3
+瘕癥 | admission | 3
+瘰疬 痰瘀互结 | admission | 3
+癥瘕病 正虚瘀结症 | admission | 3
+眩晕病 | discharge | 3
+积病 肝郁脾虚证 | admission | 3
+积病 脾肾气虚证 | admission | 3
+积聚 喉癌 | admission | 3
+积聚 气血瘀结证 | admission | 3
+积聚 湿热瘀毒型 | admission | 3
+积聚 湿热蕴结 | admission | 3
+积聚 肝气郁结 | admission | 3
+积聚 脾虚湿蕴证 | admission | 3
+积聚类病 肝郁气滞证 | admission | 3
+积聚，正虚瘀结证 | admission | 3
+积证 气阴两虚症 | admission | 3
+积证 肾精亏虚 | admission | 3
+结直肠癌 湿热蕴结证 | admission | 3
+肉瘤 | discharge | 3
+肝瘤 | discharge | 3
+肝积 脾虚肝郁 | admission | 3
+肠癖 湿热蕴结症 | admission | 3
+肠蕈 脾肾两虚证 | admission | 3
+肺积 气血亏虚证 | admission | 3
+肺积 痰热蕴肺证 | admission | 3
+肺积 痰结毒滞 | admission | 3
+肺积 肝肾亏虚 | admission | 3
+肾肿瘤 | discharge | 3
+胃痞 脾胃气虚证 | admission | 3
+胃癌 脾虚痰湿证 | admission | 3
+胆囊癌 气滞湿阻证 | admission | 3
+胆管癌 | discharge | 3
+胆管癌 湿热蕴结证 | admission | 3
+胰腺恶性肿瘤 | admission,discharge | 3
+胰腺癌 正虚毒结证 | admission | 3
+脊索瘤 肾精亏虚 | admission | 3
+脑占位 瘀血阻络证 | admission | 3
+脑肿瘤 | discharge | 3
+腹痛 湿热壅滞证 | admission | 3
+腹痛 湿热瘀滞 | admission | 3
+膀胱癌 肾亏气虚症 | admission | 3
+萎黄病 气血亏虚 | admission | 3
+血症 正虚毒结证 | admission | 3
+血症 气不摄血型 | admission | 3
+血症 湿热瘀阻证 | admission | 3
+血证 气不摄血 | admission | 3
+血证 热毒淤滞证 | admission | 3
+血证 肾阴亏虚证 | admission | 3
+血证类 气阴两虚 | admission | 3
+阴疮 | discharge | 3
+食管癌 正虚毒结证 | admission | 3
+骨折病 气滞血瘀 | admission | 3
+骨髓瘤病 | discharge | 3
+髓劳 正虚毒蕴证 | admission | 3
+中风 中经络 风痰阻络 | admission | 2
+中风、风阳上扰 | admission | 2
+中风，中经络，风痰阻络证 | admission | 2
+乳岩 脾胃虚弱 | admission | 2
+乳岩( 脾虚肝郁证 ) | admission | 2
+乳腺恶性肿瘤 | discharge | 2
+全血细胞减少 | discharge | 2
+内科病 正虚毒蕴证 | admission | 2
+内科癌病 气滞水停症 | admission | 2
+内科癌病 气血两虚证 | admission | 2
+内科癌病 痰饮内阻证 | admission | 2
+内科癌病 肺脾气虚症 | admission | 2
+内科癌病，正虚毒结证 | admission | 2
+内科癌症 气滞水停证 | admission | 2
+内科癌症 痰瘀互结证 | admission | 2
+卵巢癌 气阴两虚证 | admission | 2
+口腔癌 | admission | 2
+喉瘤病 | discharge | 2
+喘病 痰浊阻肺 | admission | 2
+嗝噎 气虚阳微证 | admission | 2
+嗝噎 气阴两虚 | admission | 2
+噎咯 | admission,discharge | 2
+噎咯 正虚毒结证 | admission,discharge | 2
+噎嗝 气阴两虚症 | admission | 2
+噎嗝病 血瘀痰结 | admission | 2
+噎膈 气虚血瘀症 | admission | 2
+噎膈 脾虚痰湿证 | admission | 2
+噎膈病 气阴两虚 | admission | 2
+多发淋巴结肿大 痰结毒滞证 | admission | 2
+心悸 | discharge | 2
+心悸 心血不足 | admission | 2
+恶核病 正虚毒结 | admission | 2
+消渴类病 气阴两虚证 | admission | 2
+淋巴瘤 气阴两虚证 | admission | 2
+淋巴瘤 脾胃亏虚证 | admission | 2
+淋巴瘤 脾虚湿蕴证 | admission | 2
+痰瘀互结证 | admission | 2
+痹症 气滞血瘀证 | admission | 2
+癃闭 气阴两虚 | admission | 2
+癃闭 肾元亏虚 | admission | 2
+癥瘕 气滞血瘀证 | admission | 2
+癥瘕 痰湿型 | admission | 2
+癥瘕 痰瘀互结 | admission | 2
+癥瘕病 正虚瘀结证 | admission | 2
+癥积 瘀毒蕴结 | admission | 2
+直肠恶性肿瘤 | admission,discharge | 2
+眩晕 气血亏虚 | admission | 2
+眩晕 肝阳上亢证 | admission | 2
+睾丸癌 | admission | 2
+积症 气阴两虚 | admission | 2
+积聚 正虚毒结型 | admission | 2
+积聚 气滞湿阻 | admission | 2
+积聚 气血双亏症 | admission | 2
+积聚 肝肾阴虚证 | admission | 2
+积聚 肝郁气滞 | admission | 2
+积聚 肝郁气虚 | admission | 2
+积聚 脾胃虚弱 | admission | 2
+积聚 脾胃虚证 | admission | 2
+积聚类病 气虚血瘀证 | admission | 2
+积聚类病 气阴两虚 | admission | 2
+积聚类病 气阴两虚证 | admission | 2
+积聚类病 痰瘀互结 | admission | 2
+积证 气滞湿阻 | admission | 2
+积证 气滞湿阻证 | admission | 2
+积证 气虚痰结证 | admission | 2
+紫癜病 脾不统血 | admission | 2
+绒毛膜癌 正虚毒结证 | admission | 2
+结肠占位 气虚痰结证 | admission | 2
+结肠癌 正虚毒结证 | admission | 2
+缺血性中风 风阳上扰证 | admission | 2
+肝痨 | discharge | 2
+肝癖 | discharge | 2
+肝积 正虚瘀结 | admission | 2
+肝积 气滞湿阻 | admission | 2
+肝积 气血亏虚 | admission | 2
+肝积 湿热蕴结证 | admission | 2
+肝肿瘤 气滞水停证 | admission | 2
+肠癖 正虚毒结证 | admission | 2
+肠癖 湿热蕴结证 | admission | 2
+肠癖 脾肾两虚证 | admission | 2
+肺病 | discharge | 2
+肺积 气虚血瘀 | admission | 2
+肺积 痰浊阻肺证 | admission | 2
+肺积 痰热阻肺证 | admission | 2
+肺积 肺瘀痰瘀证 | admission | 2
+肺积病 肺脾气虚 | admission | 2
+肺积症 痰瘀阻滞 气阴两虚 | admission | 2
+肾盂癌 气血双亏症 | admission | 2
+肾积 气阴亏虚型 | admission | 2
+胃痞病 | discharge | 2
+胆管癌 气滞湿阻证 | admission | 2
+胰腺癌 脾虚湿蕴证 | admission | 2
+胰腺肿瘤 | admission,discharge | 2
+胸痹 心血瘀阻 | admission | 2
+胸痹 痰浊痹阻 | admission | 2
+胸痹心痛-心血瘀阻证 | admission | 2
+腰痛 | discharge | 2
+腰痛 寒湿痹阻 | admission | 2
+腹痛 湿热瘀阻 | admission | 2
+膀胱恶性肿瘤 | admission,discharge | 2
+膀胱癌 脾气虚弱型 | admission | 2
+膈噎 | discharge | 2
+舌根癌 | admission,discharge | 2
+虚劳 气阴两虚型 | admission | 2
+血症 正虚毒蕴证 | admission | 2
+血症 气虚亏虚证 | admission | 2
+血症 阴虚型 | admission | 2
+血症 阴虚火旺证 | admission | 2
+血痹 | discharge | 2
+血虚证 气血亏虚 | admission | 2
+血证 正虚毒结 | admission | 2
+血证 气血两虚证 | admission | 2
+血证 气血亏虚症 | admission | 2
+血证 肝肾阴虚型 | admission | 2
+跗骨癅 | admission | 2
+阴疮 气滞血瘀 | admission | 2
+食管癌 气阴两虚证 | admission | 2
+食管肿瘤 | discharge | 2
+骨折病 | admission | 2
+骨痹 脾肾阳虚之证 | admission | 2
+骨瘤 毒热瘀结 | admission | 2
+骨瘤病 | discharge | 2
+骨癌 正虚毒结 | admission | 2
+骨癌 气血瘀结证 | admission | 2
+骨肿瘤 | discharge | 2
+骨髓瘤 正虚毒结 | admission | 2
+髓劳 气阴两虚 | admission | 2
+高血压 | admission | 2
+鼓胀 阳虚水盛 | admission | 2
+1噎膈 痰瘀互结证 | admission | 1
+丙肝 | admission | 1
+中风 中经络 风痰入络证 | admission | 1
+中风 中经络 风痰瘀阻 | admission | 1
+中风 中经络 风痰阻络 瘀血阻滞 | admission | 1
+中风 气虚血瘀 | admission | 1
+中风 风痰阻络证 | admission | 1
+中风 风阳上扰 | admission | 1
+中风 风阳上扰证 | admission | 1
+中风、中经络 风痰瘀阻证 | admission | 1
+中风、风痰入络 | admission | 1
+中风中经络 气虚络淤证 | admission | 1
+中风中经络 阴虚阳亢证 | admission | 1
+中风先兆 风痰阻络 | admission | 1
+中风病 中经络 风痰入络证 | admission | 1
+中风病 风痰入络证 | admission | 1
+中风病 风痰阻络证 | admission | 1
+中风，中经络，阴虚血瘀证 | admission | 1
+乳发 | discharge | 1
+乳岩 肝气郁结 | admission | 1
+乳岩 脾胃虚弱证。 | admission | 1
+乳岩(肝肾阴虚证) | admission | 1
+乳岩(肝郁脾虚证) | admission | 1
+乳岩(脾虚肝郁证) | admission | 1
+乳核 肝气郁结 | admission | 1
+乳癌 正虚毒结型 | admission | 1
+乳癌 痰瘀互结 | admission | 1
+乳癌病 正虚毒结 | admission | 1
+乳癌病 正虚毒结型 | admission | 1
+伤寒 | admission | 1
+侠瘿瘤 | discharge | 1
+便血 | discharge | 1
+便血 气不摄血证 | admission | 1
+便血 气虚不摄证 | admission | 1
+全骨髓病 | discharge | 1
+内伤发热病 | discharge | 1
+内伤发热病 气虚证 | admission | 1
+内科病 正虚毒结症 | admission | 1
+内科病 正虚毒结证 | admission | 1
+内科病 气血两虚证 | admission | 1
+内科病 气血亏虚郑 | admission | 1
+内科病 热毒炽盛 | admission | 1
+内科病 痰瘀互结证 | admission | 1
+内科瘤病 痰结毒滞证 | admission | 1
+内科瘤病类 | discharge | 1
+内科癌 气阴两虚证 | admission | 1
+内科癌病 正虚毒结 | admission | 1
+内科癌病 正虚毒结症 西医诊断: | admission | 1
+内科癌病 气血亏虚症 | admission | 1
+内科癌病 气血双亏证 | admission | 1
+内科癌病 气血瘀滞证 | admission | 1
+内科癌病 气血瘀结证 | admission | 1
+内科癌病 湿热蕴结证 | admission | 1
+内科癌病 痰瘀互结 | admission | 1
+内科癌病 肝郁气滞， | admission | 1
+内科癌病 脾气虚弱证 | admission | 1
+内科癌病 脾肾两虚证 | admission | 1
+内科癌病 脾肾阳虚 | admission | 1
+内科癌病 脾虚痰湿证 | admission | 1
+内科癌病 阴液亏虚证 | admission | 1
+内科癌病瘤 肺脾气虚症 | admission | 1
+冠状动脉粥样硬化性心脏病 | admission | 1
+出血性中风 | discharge | 1
+出血性中风 中经络 淤阻脑络 | admission | 1
+前列腺恶性肿瘤 | admission | 1
+卵巢癌 正虚瘀结证 | admission | 1
+发热 | discharge | 1
+发热 气虚证 | admission | 1
+口腔癌 痰瘀互结 | admission | 1
+口腔肿物 痰结毒滞证 | admission | 1
+呃逆 | discharge | 1
+咳嗽 肺脾两虚证 | admission | 1
+咽喉菌 | discharge | 1
+咽喉菌 痰瘀互结 | admission | 1
+喉瘤病 痰瘀互结证 | admission | 1
+喉癌 痰瘀互结证 | admission | 1
+喘病 水气凌心 | admission | 1
+喘病 痰浊壅肺证 | admission | 1
+喘病 肺气虚耗证 | admission | 1
+喘病 肺气郁闭 | admission | 1
+喘病 肺肾气虚型 | admission | 1
+喘病痰浊阻肺 | admission | 1
+喘症、气阴两虚 | admission | 1
+喘证 水饮凌心 | admission | 1
+喘证 水饮凌心证 | admission | 1
+喘证 痰浊阻肺证 | admission | 1
+喘证 痰湿蕴肺证 | admission | 1
+喘证 肺气郁闭证 | admission | 1
+嗝噎 正虚瘀结证 | admission | 1
+嗝噎病 正虚毒结证 | admission | 1
+噎咯 气阴两虚 | admission | 1
+噎嗝 正虚瘀结 | admission | 1
+噎嗝 正虚瘀结证 | admission | 1
+噎嗝 痰气交阻证 | admission | 1
+噎嗝 脾胃虚弱 | admission | 1
+噎嗝 脾虚痰湿证 | admission | 1
+噎嗝 血瘀痰结 | admission | 1
+噎嗝病 正虚毒结证 | admission | 1
+噎膈 气阴两虚症 | admission | 1
+噎膈病 气虚阳微证 | admission | 1
+噎膈病 痰湿阻结证 | admission | 1
+噎膈病 脾虚痰湿证 | admission | 1
+噎隔 | admission | 1
+垂体瘤 | admission | 1
+壶腹部腺癌 脾虚湿蕴证 | admission | 1
+外科癌病类 | discharge | 1
+大肠癌 | admission | 1
+大脑神经胶质瘤病 | discharge | 1
+失荣 | discharge | 1
+失荣 正虚痰凝证 | admission | 1
+头痛 淤血阻窍 | admission | 1
+子宫占位 | discharge | 1
+子宫占位 正虚瘀结证 | admission | 1
+子宫颈肿瘤 | discharge | 1
+宫颈癌 正虚毒结证 | admission | 1
+宫颈癌 脾胃亏虚证 | admission | 1
+尪痹 风寒湿证 | admission | 1
+崩漏 湿毒蕴结证 | admission | 1
+左耳部肿物 | discharge | 1
+徵瘕 | admission | 1
+心悸 心阳不足证 | admission | 1
+心悸 气虚血瘀 | admission | 1
+心悸 水气凌心犯肺 | admission | 1
+心悸 淤阻心脉证 | admission | 1
+心悸 瘀阻心脉证 | admission | 1
+心悸 阴虚血瘀 | admission | 1
+心水病 | discharge | 1
+心水病 气虚血瘀证 | admission | 1
+急劳 阴虚型 | admission | 1
+急性淋巴细胞白血病 | discharge | 1
+恶核 湿毒蕴结证 | admission | 1
+恶核 痰瘀互结 | admission | 1
+恶核 肝肾亏虚 | admission | 1
+患者中年女性，年过四旬，久病正气渐亏，复因手术戕伐正气，损伤脾胃，至脾土亏虚，土虚木乘，肝气横犯脾，发为本病。舌质淡，苔薄白，脉沉细，皆肝郁脾虚之象。辨病辨证为乳腺癌，肝郁脾虚证。 | admission | 1
+悬饮 | discharge | 1
+悬饮 痰瘀互结 | admission | 1
+昏迷 | discharge | 1
+晕厥 | discharge | 1
+晕厥 肝阳上亢 | admission | 1
+暴聋 | admission | 1
+正虚毒结证 | discharge | 1
+气厥 虚证 | admission | 1
+气瘿病 | discharge | 1
+泄泻 湿热伤中证 | admission | 1
+泄泻病 脾胃虚弱证 | admission | 1
+消渴类病 | discharge | 1
+淋巴瘤 热毒蕴结证 | admission | 1
+淋巴结肿大 气血两虚 | admission | 1
+甲状腺恶性肿瘤 | discharge | 1
+甲状腺肿瘤 | discharge | 1
+疥疮 | discharge | 1
+疥疮 气血两虚证 | admission | 1
+痞满 气阴两虚 | admission | 1
+痞满 湿热阻胃证 | admission | 1
+痞病 胃阴不足证 | admission | 1
+痰瘀阻肺证 | admission | 1
+痹病 肝肾亏损 | admission | 1
+痹症类病-寒湿痹阻证 | admission | 1
+痹证类病 风寒湿痹阻证 | admission | 1
+瘀滞证 | discharge | 1
+瘀证 热毒内蕴证 | admission | 1
+瘰疬 气滞痰凝证 | admission | 1
+瘿病 | discharge | 1
+瘿病 肝气郁结证 | admission | 1
+瘿瘤 | admission | 1
+瘿瘤 痰瘀互结证 | admission | 1
+癃闭 脾肾亏虚 | admission | 1
+癌病 脾胃虚弱证 | admission | 1
+癥痂 正虚毒结 | admission | 1
+癥痂 脾胃亏虚证 | admission | 1
+癥瘕 湿毒蕴结证 | admission | 1
+癥瘕 痰瘀互结证 | admission | 1
+癥积 气血双亏 | admission | 1
+皮肤溃疡 | discharge | 1
+皮肤癌 | admission | 1
+直肠占位 正虚瘀结证 | admission | 1
+眩晕 气血亏虚证 | admission | 1
+眩晕 痰浊上蒙证 | admission | 1
+眩晕 痰瘀阻络证 | admission | 1
+眩晕 肝火上炎证 | admission | 1
+眩晕 肝阳上亢 | admission | 1
+眩晕 风痰入络证 | admission | 1
+眩晕-气血亏虚证 | admission | 1
+眩晕-风痰入络证 | admission | 1
+眩晕、气血亏虚 | admission | 1
+眩晕、风阳上扰 | admission | 1
+石瘿 | discharge | 1
+科癌病 痰瘀互结证 | admission | 1
+积 痰瘀互结 | admission | 1
+积病 肝郁血瘀 | admission | 1
+积病 脾胃气虚 | admission | 1
+积病、痰瘀互结 | admission | 1
+积症 | discharge | 1
+积症 正虚毒结症 | admission | 1
+积症 瘀血阻滞 | admission | 1
+积聚 气血亏虚兼血瘀 | admission | 1
+积聚 湿热内蕴证 | admission | 1
+积聚 热毒内蕴 | admission | 1
+积聚 痰气互结证 | admission | 1
+积聚 痰湿积聚 | admission | 1
+积聚 痰湿结聚证。 | admission | 1
+积聚 肝胃不和 | admission | 1
+积聚 肝胆实热 | admission | 1
+积聚 肝脾血瘀证 | admission | 1
+积聚 肝郁脾虚 | admission | 1
+积聚 肺气亏虚 | admission | 1
+积聚 肺气虚衰证 | admission | 1
+积聚 肺脾两虚症 | admission | 1
+积聚 肺脾两虚证 | admission | 1
+积聚 肺脾气虚证 | admission | 1
+积聚 脾肾亏虚症 | admission | 1
+积聚 脾胃气虚证 | admission | 1
+积聚 脾虚肝郁 | admission | 1
+积聚病 正虚毒结症 | admission | 1
+积聚病 气滞水停证 | admission | 1
+积聚病 痰瘀互结 | admission | 1
+积聚病 痰结毒滞证 | admission | 1
+积聚病 肝郁脾虚证 | admission | 1
+积聚病 肺脾气虚 | admission | 1
+积聚病 脾肾亏虚证 | admission | 1
+积聚症 痰瘀互结证 | admission | 1
+积聚类 正虚瘀结证 | admission | 1
+积聚类 肝瘀气滞 | admission | 1
+积聚类 肝脾血瘀证 | admission | 1
+积聚类 肝郁气滞 | admission | 1
+积聚类病 正虚毒结证 | admission | 1
+积聚类病、湿热瘀毒型 | admission | 1
+积聚证 阴液亏虚证 | admission | 1
+积证 湿毒瘀积 | admission | 1
+积证 热毒淤滞 | admission | 1
+积证 热毒淤滞证 | admission | 1
+积证 脾胃亏虚证 | admission | 1
+积证 脾虚湿蕴证 | admission | 1
+糖尿病 | admission | 1
+紫癜 阴虚火旺型 | admission | 1
+紫癜风 | discharge | 1
+紫癜风 阴虚火旺 | admission | 1
+纳差 脾胃气虚证 | admission | 1
+绒毛膜癌 | discharge | 1
+结直肠癌 | discharge | 1
+缺血性中风 中经络 阴虚血瘀 | admission | 1
+缺血性中风 中经络 阴虚血瘀 痰瘀阻滞 | admission | 1
+缺血性中风-风痰阻络证 | admission | 1
+缺铁性贫血 | admission | 1
+聚病 气血两虚证 | admission | 1
+肉瘤 痰瘀互结 | admission | 1
+肌痿 | discharge | 1
+肝炎 | discharge | 1
+肝瘀实证 | discharge | 1
+肝瘟 | discharge | 1
+肝瘟 毒热瘀结证 | admission | 1
+肝积 气滞水停名 | admission | 1
+肝积 气滞血瘀 | admission | 1
+肝积 肝脾血瘀证 | admission | 1
+肝积 肝郁气滞 | admission | 1
+肝积 肝郁脾虚证 | admission | 1
+肝继发恶性肿瘤 | admission | 1
+肝胀 | discharge | 1
+肠痹 气血两虚证 | admission | 1
+肠瘤 | discharge | 1
+肠癌 脾肾阳虚 | admission | 1
+肠结 | discharge | 1
+肠结 脾胃亏虚 | admission | 1
+肠蕈 | admission | 1
+肠蕈 痰瘀互结证 | admission | 1
+肠蕈 痰结血瘀 | admission | 1
+肺、阴证类 | discharge | 1
+肺占位 肺脾两虚证 | admission | 1
+肺炎 | discharge | 1
+肺癌 肺脾气虚证 | admission | 1
+肺积 气滞血瘀证 | admission | 1
+肺积 痰淤互结证 | admission | 1
+肺积 痰淤阻肺 | admission | 1
+肺积 痰湿蕴肺证 | admission | 1
+肺积 痰瘀互 | admission | 1
+肺积 痰瘀互二姐 | admission | 1
+肺积 痰瘀互结证 1 | admission | 1
+肺积 痰瘀阻滞证 | admission | 1
+肺积 肺气不足证 | admission | 1
+肺积 肺脾两虚 | admission | 1
+肺积 肺脾气虚 | admission | 1
+肺积 肺脾气虚兼血瘀 | admission | 1
+肺积 肺郁痰瘀证 | admission | 1
+肺积 脾肺气虚证 | admission | 1
+肺积 阴虚毒瘀 | admission | 1
+肺积病 痰瘀互结 | admission | 1
+肺积病 肺气亏虚证 | admission | 1
+肺肿瘤 肺脾气虚 | admission | 1
+肺胀 | admission | 1
+肺胀 痰浊壅肺证 | admission | 1
+肺证类 | discharge | 1
+肺部感染 | admission | 1
+肾囊肿 肾虚血瘀证 | admission | 1
+肾恶性肿瘤 气血亏虚 | admission | 1
+肾恶性肿瘤 气血双亏 | admission | 1
+肾病 | discharge | 1
+肾盂肿瘤 | discharge | 1
+肾积 气血亏虚 | admission | 1
+肾衰 脾肾气虚证 | admission | 1
+肾衰病 | discharge | 1
+胁痛 | discharge | 1
+胁痛 肝胆湿热 | admission | 1
+胃占位 正虚瘀结证 | admission | 1
+胃恶性肿瘤 脾虚痰湿证 | admission | 1
+胃痞 痰湿内盛 | admission | 1
+胃痞病 脾胃气虚证 | admission | 1
+胃痞病 脾胃虚弱证 | admission | 1
+胃痞病 阴虚内热证 | admission | 1
+胃癌 正虚毒结证 | admission | 1
+胃癌 痰瘀互结证 | admission | 1
+胃积 | admission | 1
+胃积 正虚瘀结证 | admission | 1
+胃肿瘤 气滞血瘀证 | admission | 1
+胃脘痛 气滞血瘀证 | admission | 1
+胆囊占位 | discharge | 1
+胆囊癌 | admission | 1
+胆囊癌 热毒内蕴证 | admission | 1
+胆囊肿瘤 脾胃虚弱证 | admission | 1
+背部肿物 正虚毒结型 | admission | 1
+胰癌 | discharge | 1
+胰癌 湿热瘀阻证 | admission | 1
+胰腺瘤 | discharge | 1
+胰腺肿瘤 正虚毒结型 | admission | 1
+胸痛 | discharge | 1
+胸痹 心血淤阻 | admission | 1
+胸痹 心血瘀阻证 | admission | 1
+胸痹 痰浊阻肺证 | admission | 1
+胸痹 瘀阻心脉 | admission | 1
+胸痹心痛 | admission | 1
+胸痹心痛 心气不足证 | admission | 1
+胸痹心痛 气滞胸膈证 | admission | 1
+胸痹心痛 气虚血瘀证 | admission | 1
+胸痹心痛 瘀血痹阻证 | admission | 1
+胸痹心痛病 | admission | 1
+胸痹心痛病 气虚血瘀证 | admission | 1
+脊索瘤 | discharge | 1
+脊髓痨 | discharge | 1
+脑恶性肿瘤 | discharge | 1
+脑积 | admission | 1
+脑积 瘀血阻络证 | admission | 1
+脑积水 | discharge | 1
+脱病 | discharge | 1
+腰痛 寒湿痹阻证 | admission | 1
+腰痛-寒湿痹阻证 | admission | 1
+腰痛病 气滞血瘀证 | admission | 1
+腹水 | discharge | 1
+腹痛 肝郁气滞证 | admission | 1
+腹痛 脾胃气虚证 | admission | 1
+膀胱占位性病变 | discharge | 1
+膈噎 正虚毒结证 | admission | 1
+膈噎 气阴两虚证 | admission | 1
+膈噎 痰瘀互结证 | admission | 1
+色素痣 | admission | 1
+萎证 肝肾不足 | admission | 1
+葡萄胎 正虚毒结证 | admission | 1
+虚劳 气血两虚证 | admission | 1
+虚劳 气血亏虚症 | admission | 1
+虚劳 气阴两虚证 | admission | 1
+虚劳 肾阴虚证 | admission | 1
+虚劳 脾肾两虚 | admission | 1
+虚劳 脾胃虚弱证 | admission | 1
+血小板减少 | discharge | 1
+血淋 肺热壅盛 | admission | 1
+血淋病 | discharge | 1
+血症 心脾两虚证 | admission | 1
+血症 气不摄血 | admission | 1
+血症 气血瘀滞证 | admission | 1
+血症 气阴两虚 | admission | 1
+血症 肝肾阴虚证 | admission | 1
+血症 肾阴虚型 | admission | 1
+血症气 虚亏虚型 | admission | 1
+血瘀证 | discharge | 1
+血癌 气血亏虚 | admission | 1
+血癌(正虚毒蕴) | admission | 1
+血癌(正虚毒蕴证) | admission | 1
+血癌(气血亏虚证) | admission | 1
+血证 气滞血瘀 | admission | 1
+血证 气血亏 | admission | 1
+血证 痰瘀互结 | admission | 1
+血证 肝肾阴虚 | admission | 1
+血证 肾阴虚证 | admission | 1
+血证 脾不统血 | admission | 1
+血证 血热妄行 | admission | 1
+血证类 气血两虚 | admission | 1
+血证类 瘀血阻滞 | admission | 1
+血证类 脾肾阳虚之证 | admission | 1
+贫血 气不摄血证 | admission | 1
+贫血 气血亏虚 | admission | 1
+软骨肉瘤 | admission | 1
+阴挺 | admission | 1
+阴疮 正虚毒结 | admission | 1
+阴道残端癌 正虚瘀结证 | admission | 1
+附骨疽 | discharge | 1
+附骨疽病 | discharge | 1
+面瘫病 风邪阻络 | admission | 1
+颊疡 痰瘀互结证 | admission | 1
+颊粘膜癌 | discharge | 1
+颤病 风阳内动 | admission | 1
+颤证 风阳内动 | admission | 1
+食管恶性肿瘤 | discharge | 1
+食管癌 痰瘀互结证 | admission | 1
+骨疽病 气血瘀阻证 | admission | 1
+骨痹 湿热蕴结证 | admission | 1
+骨痹 肝肾亏虚证 | admission | 1
+骨痹 脾肾阳虚 | admission | 1
+骨瘤 脾肾两虚 | admission | 1
+骨髓增生异常 | discharge | 1
+骨髓增生异常 气血亏虚证 | admission | 1
+骨髓增生异常综合征 | discharge | 1
+骨髓瘤 正虚毒结证 | admission | 1
+髓劳 气血两虚型 | admission | 1
+髓劳 气血瘀结证 | admission | 1
+髓劳 脾不统血 | admission | 1
+髓劳病 肾阴虚证 | admission | 1
+髓系肉瘤 | admission | 1
+鹦瘤 | admission | 1
+黄疸 气滞血瘀 | admission | 1
+黄疸 气阴两虚 | admission | 1
+黄疸 湿重于热证 | admission | 1
+黄疸 阳黄 湿重于热证 | admission | 1
+黄疸 阳黄 热重于湿证 | admission | 1
+黄耳伤寒病 | discharge | 1
+鼻咽肿物 | discharge | 1
+鼻岩 | discharge | 1
+鼻渊病 | discharge | 1
+鼻窦癌 | discharge | 1
+鼻衄病 | discharge | 1

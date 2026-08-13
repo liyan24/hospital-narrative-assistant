@@ -10,6 +10,11 @@ class LLMService:
             base_url=settings.openai_base_url,
         )
         self.model = settings.openai_model
+        # 思考模式开关（DeepSeek 推理模型），通过 extra_body 传给 API
+        thinking_mode = settings.thinking_mode.strip().lower()
+        if thinking_mode not in ("enabled", "disabled"):
+            thinking_mode = "enabled"
+        self.thinking_mode = thinking_mode
 
     def chat(
         self,
@@ -49,8 +54,18 @@ class LLMService:
                 messages=messages,
                 temperature=temperature,
                 max_tokens=max_tokens,
+                # DeepSeek 思考模式开关需放在 extra_body 中（OpenAI SDK 无此参数）
+                extra_body={"thinking": {"type": self.thinking_mode}},
             )
-            content = response.choices[0].message.content
+            choice = response.choices[0]
+            content = choice.message.content
+            # 推理模型（如 deepseek-v4-flash）的思考token与回答token共用 max_tokens，
+            # 额度被思考耗尽时会静默返回空内容（finish_reason="length"），需显式识别
+            if not content and getattr(choice, "finish_reason", None) == "length":
+                content = (
+                    f"[LLM调用失败] 模型因 max_tokens={max_tokens} 过小未产出内容"
+                    "（推理模型的思考token会占用该额度），请调大 max_tokens 后重试"
+                )
         except Exception as e:
             content = f"[LLM调用失败] {str(e)}"
 
@@ -106,12 +121,14 @@ class LLMService:
 
     def test_connection(self) -> bool:
         try:
-            self.chat(
+            content = self.chat(
                 [{"role": "user", "content": "Hello"}],
-                max_tokens=10,
+                # 推理模型的思考token会占用 max_tokens，额度太小会得到空内容
+                max_tokens=500,
                 use_cache=False,  # 测试连接跳过缓存
             )
-            return True
+            # chat() 内部不抛异常，需通过返回值判断调用是否真正成功
+            return bool(content) and not content.startswith("[LLM调用失败]")
         except Exception:
             return False
 

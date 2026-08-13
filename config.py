@@ -8,6 +8,10 @@ class Settings(BaseSettings):
     openai_base_url: str = "https://api.openai.com/v1"
     openai_model: str = "gpt-4o"
 
+    # 思考模式（DeepSeek 推理模型）：enabled / disabled
+    # 思考模式下 temperature 等采样参数不生效，且思维链 token 与回答共用 max_tokens
+    thinking_mode: str = "enabled"
+
     # MySQL
     mysql_host: str = "localhost"
     mysql_port: int = 3306

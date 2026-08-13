@@ -1,0 +1,149 @@
+{
+  "node_examples": [
+    {
+      "label": "Patient",
+      "data": {
+        "patient_id": "4116-002-000000000000000000000093",
+        "medical_record_no": "40594",
+        "age": 66,
+        "marital_status": "已婚",
+        "occupation": "无",
+        "allergy_history": "无"
+      }
+    },
+    {
+      "label": "Visit",
+      "data": {
+        "visit_id": "33840002",
+        "patient_id": "4116-002-000000000000000000000021",
+        "admission_date": "2019-07-10",
+        "chief_complaint": "发现左肺占位6年余",
+        "discharge_date": "2019-07-17",
+        "length_of_stay": 8
+      }
+    },
+    {
+      "label": "Disease",
+      "data": {
+        "name": "左肺恶性肿瘤",
+        "type": "western",
+        "category": "admission,discharge",
+        "frequency": 1971
+      }
+    },
+    {
+      "label": "Drug",
+      "data": {
+        "name": "中药熏洗治疗",
+        "original_names": [
+          "中药熏洗治疗"
+        ],
+        "count": 4201
+      }
+    },
+    {
+      "label": "Surgery",
+      "data": {
+        "name": "经腔插管消化道造影术",
+        "category": null,
+        "level": null,
+        "anesthesia_method": null
+      }
+    }
+  ],
+  "relationship_examples": [
+    {
+      "type": "HAS_VISIT",
+      "from_label": "Patient",
+      "from_id": "4116-002-000000000000000000000021",
+      "to_label": "Visit",
+      "to_id": "33840002",
+      "properties": {}
+    },
+    {
+      "type": "DIAGNOSED_WITH",
+      "from_label": "Visit",
+      "from_id": "33840002",
+      "to_label": "Disease",
+      "to_id": "左肺恶性肿瘤",
+      "properties": {
+        "diagnosis_type": "admission",
+        "is_main": true,
+        "type": "western"
+      }
+    },
+    {
+      "type": "CHIEF_COMPLAINT",
+      "from_label": "Visit",
+      "from_id": "33840002",
+      "to_label": "ChiefComplaint",
+      "to_id": "发现左肺占位6年余",
+      "properties": {}
+    },
+    {
+      "type": "PERFORMED_EXAM",
+      "from_label": "Visit",
+      "from_id": "48054003",
+      "to_label": "Exam",
+      "to_id": "磁共振平扫",
+      "properties": {
+        "exam_date": "2019-01-01",
+        "report_date": "2019-01-01",
+        "description": "肝脏边缘光滑，各叶大小比例正常，肝内可见多发类圆形、不规则形异常信号影，最大的最大截面大小约25.81X31.77mm，小的数毫米，部分可见分格影，边缘欠清晰，信号欠均匀，T2压脂序列呈高信号或以高信...",
+        "diagnosis": "肝内及脾脏多发异常信号影，考虑转移瘤可能； 2.盆腔术后改变； 3.盆腔多发小淋巴结，腹股沟、腹腔及腹膜后多发肿大淋巴结； 4.胆囊结石(多发)； 以上请结合临床及其它相关检查，建议必要时进一步增强扫描检查。"
+      }
+    },
+    {
+      "type": "HAS_LAB_RESULT",
+      "from_label": "Visit",
+      "from_id": "47448010",
+      "to_label": "LabItem",
+      "to_id": "血小板分布宽度",
+      "properties": {
+        "value": 32.9,
+        "unit": "%",
+        "reference_range": "5～42.3",
+        "abnormal_flag": null,
+        "hint": null
+      }
+    }
+  ],
+  "bonus_relationship_examples": [
+    {
+      "type": "PRESCRIBED",
+      "from_label": "Visit",
+      "from_id": "50445001",
+      "to_label": "Drug",
+      "to_id": "中药熏洗治疗",
+      "properties": {
+        "dosage": null,
+        "dosage_unit": null,
+        "frequency": "q.d.",
+        "route": null,
+        "start_date": "2019-01-01",
+        "end_date": "2019-01-25",
+        "order_category": "长期"
+      }
+    },
+    {
+      "type": "UNDERWENT",
+      "from_label": "Visit",
+      "from_id": "52564001",
+      "to_label": "Surgery",
+      "to_id": "经腔插管消化道造影术",
+      "properties": {
+        "start_date": "2019-02-14",
+        "end_date": null,
+        "description": null
+      }
+    },
+    {
+      "type": "IN_DEPARTMENT",
+      "from_label": "Visit",
+      "from_id": "48054003",
+      "to_label": "Department",
+      "to_id": "肿瘤血液科",
+      "properties": {}
+    }
+  ]
+}

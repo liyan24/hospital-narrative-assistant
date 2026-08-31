@@ -24,3 +24,15 @@ frontend/node_modules/
 frontend/dist/
 frontend/.env
 frontend/*.log
+
+# 敏感数据与实验产物（不进入公开仓库）
+data/llm_cache/
+data/result_cache/
+data/outputs/
+data/cache/
+data/vector_db/
+experiments/output/
+experiments/output_run1/
+experiments/output_ablation_*/
+*.log
+docs/开题报告*.docx

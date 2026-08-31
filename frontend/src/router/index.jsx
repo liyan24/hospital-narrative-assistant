@@ -13,6 +13,7 @@ import Briefing from '../views/portal/BriefingView.jsx'
 import QualityView from '../views/portal/QualityView.jsx'
 import SimilarPatientView from '../views/portal/SimilarPatientView.jsx'
 import ResearchView from '../views/portal/ResearchView.jsx'
+import ResearchAssistantView from '../views/portal/ResearchAssistantView.jsx'
 
 import AdminDashboard from '../views/admin/DashboardView.jsx'
 import UserManagement from '../views/admin/UserManagementView.jsx'
@@ -51,6 +52,7 @@ const routes = [
       { path: 'quality', element: <QualityView /> },
       { path: 'similar-patient', element: <SimilarPatientView /> },
       { path: 'research', element: <ResearchView /> },
+      { path: 'research-assistant', element: <ResearchAssistantView /> },
     ],
   },
   {

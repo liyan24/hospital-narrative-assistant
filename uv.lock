@@ -1071,6 +1071,7 @@ dependencies = [
     { name = "langchain-community" },
     { name = "langchain-openai" },
     { name = "matplotlib" },
+    { name = "mlxtend" },
     { name = "neo4j" },
     { name = "numpy" },
     { name = "openai" },
@@ -1086,6 +1087,8 @@ dependencies = [
     { name = "rapidfuzz" },
     { name = "reportlab" },
     { name = "requests" },
+    { name = "scikit-learn" },
+    { name = "scipy" },
     { name = "sentence-transformers" },
     { name = "sqlalchemy" },
     { name = "streamlit" },
@@ -1103,6 +1106,7 @@ requires-dist = [
     { name = "langchain-community", specifier = ">=0.4.2" },
     { name = "langchain-openai", specifier = ">=1.2.2" },
     { name = "matplotlib", specifier = ">=3.10.9" },
+    { name = "mlxtend", specifier = ">=0.25.0" },
     { name = "neo4j", specifier = ">=6.2.0" },
     { name = "numpy", specifier = ">=2.4.6" },
     { name = "openai", specifier = ">=2.41.0" },
@@ -1118,6 +1122,8 @@ requires-dist = [
     { name = "rapidfuzz", specifier = ">=3.14.5" },
     { name = "reportlab", specifier = ">=4.5.1" },
     { name = "requests", specifier = ">=2.34.2" },
+    { name = "scikit-learn", specifier = ">=1.9.0" },
+    { name = "scipy", specifier = ">=1.17.1" },
     { name = "sentence-transformers", specifier = ">=5.5.1" },
     { name = "sqlalchemy", specifier = ">=2.0.50" },
     { name = "streamlit", specifier = ">=1.58.0" },
@@ -1990,6 +1996,23 @@ source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
 sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/d6/54/cfe61301667036ec958cb99bd3efefba235e65cdeb9c84d24a8293ba1d90/mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba", size = 8729, upload-time = "2022-08-14T12:40:10.846Z" }
 wheels = [
     { url = "https://pypi.tuna.tsinghua.edu.cn/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8", size = 9979, upload-time = "2022-08-14T12:40:09.779Z" },
+]
+
+[[package]]
+name = "mlxtend"
+version = "0.25.0"
+source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple" }
+dependencies = [
+    { name = "joblib" },
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "scikit-learn" },
+    { name = "scipy" },
+]
+sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/a5/c2/a257a9b3f2f989729c6c88d127be0d832cc6defbab564c97c1e410de4697/mlxtend-0.25.0.tar.gz", hash = "sha256:7fd52f1c55ea80036945490ea54c497aa2251ac03cf8e728cde12275d2169bcc", size = 1287049, upload-time = "2026-06-06T12:32:13.64Z" }
+wheels = [
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/61/b8/bda63104fa9e3c4e88bd158b664d21b66667fbee3eb35f737dd329dc26a3/mlxtend-0.25.0-py3-none-any.whl", hash = "sha256:71b9500d9cb506642588995783d681a30c99a3b35abfbeb7b4e800d217fc12a5", size = 1355323, upload-time = "2026-06-06T12:32:12.083Z" },
 ]
 
 [[package]]

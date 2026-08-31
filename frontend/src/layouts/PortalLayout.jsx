@@ -38,6 +38,7 @@ export default function PortalLayout() {
     }
     if (has('research:view') && features.research_export !== false) {
       items.push({ key: '/portal/research', icon: <ExperimentOutlined />, label: '科研队列' })
+      items.push({ key: '/portal/research-assistant', icon: <ExperimentOutlined />, label: '科研助手' })
     }
     return items
   }, [permissions, features])

@@ -44,3 +44,20 @@ export const updateFeatures = (data) => request.put('/admin/features', data)
 
 export const getConfig = () => request.get('/admin/config')
 export const updateConfig = (data) => request.put('/admin/config', data)
+
+// 科研助手：LLM 长调用单独放宽超时（全局默认 60s 不够）
+export const getResearchDataAssets = () => request.get('/research/data-assets')
+export const getResearchSkills = () => request.get('/research/skills')
+export const runResearchSkill = (skillId, params) => request.post(`/research/skills/${skillId}/run`, { params }, { timeout: 300000 })
+export const getResearchResult = (resultId) => request.get(`/research/results/${resultId}`)
+export const runResearchCode = (code) => request.post('/research/code/run', { code }, { timeout: 120000 })
+export const recommendResearch = (question) => request.post('/research/recommend', { question }, { timeout: 180000 })
+export const interpretResearchResult = (resultId) => request.post('/research/interpret', { result_id: resultId }, { timeout: 180000 })
+export const searchLiterature = (data) => request.post('/research/literature/search', data, { timeout: 180000 })
+export const generatePaper = (data) => request.post('/research/paper/generate', data, { timeout: 600000 })
+
+export const proposeResearchTopics = (data = {}) => request.post('/research/auto/topics', data, { timeout: 300000 })
+export const startAutoResearch = (topic) => request.post('/research/auto/start', { topic }, { timeout: 60000 })
+export const getAutoResearchJob = (jobId) => request.get(`/research/auto/${jobId}`)
+export const getAutoResearchHistory = () => request.get('/research/auto/history')
+export const evaluateCustomTopic = (idea) => request.post('/research/auto/topics/custom', { idea }, { timeout: 300000 })

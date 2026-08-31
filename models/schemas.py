@@ -203,3 +203,47 @@ class RiskPredictionResponse(BaseModel):
     risk_factors: list[str] = []
     high_risk_patients: list[dict] = []
     score_distribution: dict = {}
+
+
+# ========== 科研助手 Schema ==========
+
+
+class ResearchSkillRunRequest(BaseModel):
+    params: dict = {}
+
+
+class ResearchCodeRunRequest(BaseModel):
+    code: str
+
+
+class ResearchRecommendRequest(BaseModel):
+    question: str
+
+
+class ResearchInterpretRequest(BaseModel):
+    result_id: str
+
+
+class LiteratureSearchRequest(BaseModel):
+    query: str
+    max_results: int = 5
+
+
+class PaperGenerateRequest(BaseModel):
+    question: str
+    result_ids: list[str] = []
+    articles: list[dict] = []
+    title: Optional[str] = None
+
+
+class AutoResearchStartRequest(BaseModel):
+    topic: dict
+
+
+class AutoTopicsRequest(BaseModel):
+    refresh: bool = False
+    exclude_titles: list[str] = []
+
+
+class AutoCustomTopicRequest(BaseModel):
+    idea: str

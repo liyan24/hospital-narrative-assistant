@@ -1,5 +1,6 @@
 """论文写作类算子（LLM 驱动）：选题建议、文献检索、提纲、正文、参考文献格式化、自评审。"""
 import json
+import re
 import xml.etree.ElementTree as ET
 
 from services.llm_service import llm_service
@@ -156,6 +157,53 @@ class LiteratureSearchSkill(BaseSkill):
             })
         return articles
 
+    def _expand_queries(self, query: str) -> list[str]:
+        """多查询扩展（借鉴 STORM/OpenScholar 多视角检索）：LLM 生成同义/上下位改写，
+        失败回落为仅原检索式"""
+        content = _chat(
+            [{"role": "system", "content": SYSTEM_PROMPT},
+             {"role": "user", "content":
+              f"PubMed 检索式：{query}\n\n"
+              "请给出 2 个改写后的英文 PubMed 检索式，用于扩大 Recall："
+              "一个使用同义词/近义表达，一个使用更宽泛的上位概念。"
+              "每行一个检索式，不要输出其他内容。"}],
+            f"{self.meta.id}_expand", max_tokens=800, temperature=0.4,
+        )
+        queries = [query]
+        if not _llm_failed(content):
+            for line in content.split("\n"):
+                q = line.strip().strip("\"'0123456789.、 ")
+                if q and q != query and len(q) < 150 and q not in queries:
+                    queries.append(q)
+        return queries[:3]
+
+    def _rerank(self, query: str, articles: list[dict], max_results: int) -> list[dict]:
+        """LLM 按与检索主题的相关性对候选文献重排，取前 max_results；失败保持原顺序"""
+        if len(articles) <= max_results:
+            return articles
+        brief = "\n".join(
+            f"[{i}] {a['title']}（{a.get('journal', '')}, {a.get('year', '')}）"
+            for i, a in enumerate(articles))
+        content = _chat(
+            [{"role": "system", "content": SYSTEM_PROMPT},
+             {"role": "user", "content":
+              f"检索主题：{query}\n\n候选文献：\n{brief}\n\n"
+              f"请评估每篇文献与检索主题的相关性，选出最相关的 {max_results} 篇，"
+              f"严格输出 JSON 数组，只含文献编号，如 [2,0,5]。"}],
+            f"{self.meta.id}_rerank", max_tokens=800, temperature=0.1,
+        )
+        if _llm_failed(content):
+            return articles[:max_results]
+        try:
+            m = re.search(r"\[.*\]", content, re.S)
+            order = [i for i in json.loads(m.group()) if isinstance(i, int)] if m else []
+            picked = [articles[i] for i in order if 0 <= i < len(articles)]
+            seen = {id(a) for a in picked}
+            picked += [a for a in articles if id(a) not in seen]
+            return picked[:max_results] or articles[:max_results]
+        except Exception:
+            return articles[:max_results]
+
     def run(self, params: dict) -> dict:
         query = str(self.get_param(params, "query") or "").strip()
         max_results = int(self.get_param(params, "max_results"))
@@ -163,8 +211,15 @@ class LiteratureSearchSkill(BaseSkill):
             return make_result("请先填写 PubMed 检索式。")
 
         try:
-            pmids = self._esearch(query, max_results)
-            articles = self._efetch(pmids) if pmids else []
+            # 多查询扩展 → 多路检索合并去重
+            queries = self._expand_queries(query)
+            pmids = []
+            for q in queries:
+                pmids.extend(self._esearch(q, max_results))
+            pmids = list(dict.fromkeys(pmids))
+            articles = self._efetch(pmids[:max(max_results * 2, 10)]) if pmids else []
+            # 相关性重排
+            articles = self._rerank(query, articles, max_results)
         except Exception as e:
             return make_result(
                 f"文献检索不可用：PubMed 接口访问失败（{e}）。"
@@ -199,7 +254,8 @@ class LiteratureSearchSkill(BaseSkill):
         if _llm_failed(digest):
             digest = f"（LLM 要点总结暂不可用：{digest}。以下为文献原始信息，可人工阅读摘要。）"
 
-        summary = f"检索式「{query}」命中 {len(articles)} 篇文献。\n\n{digest}"
+        expanded = f"（多查询扩展：{' / '.join(queries)}）" if len(queries) > 1 else ""
+        summary = f"检索式「{query}」{expanded}命中 {len(articles)} 篇文献（已按相关性重排）。\n\n{digest}"
         return make_result(summary, tables, facts={"query": query, "articles": articles})
 
 

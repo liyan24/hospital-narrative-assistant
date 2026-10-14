@@ -3,6 +3,7 @@
 面向不懂 ML 的医生：只选一个议题，系统自动跑完分析并产出论文 docx。
 """
 import json
+import re
 import threading
 import uuid
 from datetime import datetime
@@ -100,7 +101,38 @@ class AutoResearchService:
         topics = self._parse_topics(content)
         if not topics:
             raise ValueError(f"议题解析失败: {content[:200]}")
-        return topics
+        return self._rank_topics(topics, profile_brief)
+
+    def _rank_topics(self, topics: list[dict], profile_brief: dict) -> list[dict]:
+        """议题锦标赛排序（借鉴 Co-Scientist 反思-排序环节）：
+        LLM 从数据可支撑性/临床意义/创新性三方面批判性评估并重排，失败保持原顺序"""
+        if len(topics) < 2:
+            return topics
+        brief = json.dumps([
+            {"id": t.get("id"), "title": t.get("title"), "question": t.get("question"),
+             "skills": [s.get("id") for s in t.get("skills", [])]}
+            for t in topics], ensure_ascii=False)
+        content = self.llm.chat(
+            [{"role": "system", "content": SYSTEM_PROMPT},
+             {"role": "user", "content":
+              f"数据集真实画像：{json.dumps(profile_brief.get('facts', {}), ensure_ascii=False, default=str)[:3000]}\n\n"
+              f"候选研究议题：\n{brief}\n\n"
+              "请从三方面批判性评估每个议题：1) 数据可支撑性（样本量、字段覆盖；"
+              "检验数据仅约两成患者有、手术记录仅约85例，依赖稀缺数据的议题应排后）；"
+              "2) 临床意义；3) 创新性。"
+              "按综合质量从高到低排序，严格输出 JSON 数组，只含议题 id，如 [\"topic_2\",\"topic_1\"]。"}],
+            temperature=0.2, max_tokens=500,
+            cache_namespace="research:topic_rank",
+        )
+        try:
+            m = re.search(r"\[.*\]", content or "", re.S)
+            order = json.loads(m.group()) if m else []
+            by_id = {t.get("id"): t for t in topics}
+            ranked = [by_id[i] for i in order if i in by_id]
+            ranked += [t for t in topics if t.get("id") not in set(order)]
+            return ranked or topics
+        except Exception:
+            return topics
 
     def _parse_topics(self, content: str) -> list[dict]:
         """从 LLM 回复中提取 JSON 数组并校验算子 id，补上算子中文名"""
@@ -378,6 +410,8 @@ class AutoResearchService:
         """创建流水线任务并后台执行，返回 job_id"""
         job_id = f"autojob_{uuid.uuid4().hex[:8]}"
         steps = [{"key": "profile", "label": "数据画像", "state": "pending",
+                  "detail": "", "result_id": None},
+                 {"key": "literature", "label": "文献检索", "state": "pending",
                   "detail": "", "result_id": None}]
         for s in topic.get("skills", []):
             steps.append({
@@ -385,6 +419,8 @@ class AutoResearchService:
                 "label": f"算子：{s.get('name', s.get('id', ''))}",
                 "state": "pending", "detail": "", "result_id": None,
             })
+        steps.append({"key": "outline", "label": "大纲确认", "state": "pending",
+                      "detail": "", "result_id": None})
         steps.append({"key": "paper", "label": "论文生成", "state": "pending",
                       "detail": "", "result_id": None})
 
@@ -394,9 +430,16 @@ class AutoResearchService:
             "topic": topic,
             "steps": steps,
             "result_ids": [],
+            "articles": [],
+            "outline": None,
+            "paper_params": None,
             "paper": None,
+            "quality_report": None,
+            "review": None,
             "filename": None,
             "download_url": None,
+            "report_filename": None,
+            "report_download_url": None,
             "error": None,
             "created_at": _now(),
             "finished_at": None,
@@ -425,8 +468,29 @@ class AutoResearchService:
             if result_id is not None:
                 step["result_id"] = result_id
 
+    def _pubmed_query(self, topic: dict) -> str:
+        """由议题生成 PubMed 英文检索式（LLM 翻译，失败给通用回落）"""
+        fallback = "cancer retrospective study"
+        title = (topic.get("title") or topic.get("question") or "").strip()
+        if not title:
+            return fallback
+        query = llm_service.chat(
+            [{"role": "system", "content": SYSTEM_PROMPT},
+             {"role": "user", "content":
+              f"研究议题：{title}\n{topic.get('question', '')}\n\n"
+              "请将该议题翻译为一个简洁的 PubMed 英文检索式（3-6 个词，"
+              "只输出检索式本身，不要解释）。"}],
+            temperature=0.2, max_tokens=800,
+            cache_namespace="research:auto_query",
+            use_cache=False,  # 避免一次失败被缓存后永久回落通用检索式
+        )
+        query = (query or "").strip().strip("\"'")
+        if not query or query.startswith("[LLM调用失败]") or len(query) > 120:
+            return fallback
+        return query
+
     def _run(self, job_id: str):
-        """流水线主流程（后台线程）：数据画像 → 各算子 → 论文生成。
+        """流水线主流程（后台线程）：数据画像 → 文献检索 → 各算子 → 论文生成。
         捕所有异常，绝不让 job 永远停在 running。"""
         job = self.get_job(job_id)
         if job is None:
@@ -446,8 +510,26 @@ class AutoResearchService:
             except Exception as e:
                 self._update_step(job, idx, "failed", f"数据画像失败：{e}")
 
-            # 2) 顺序执行议题算子（默认参数，失败不中断后续）
-            for i, s in enumerate(topic.get("skills", []), start=1):
+            # 2) 文献检索（PubMed，失败不中断；命中文献供论文引用）
+            idx = 1
+            self._update_step(job, idx, "running")
+            try:
+                query = self._pubmed_query(topic)
+                lit = get_skill("literature_search").run(
+                    {"query": query, "max_results": 15})
+                articles = (lit.get("facts") or {}).get("articles") or []
+                with _JOBS_LOCK:
+                    job["articles"] = articles
+                if articles:
+                    self._update_step(job, idx, "done",
+                                      f"检索式「{query}」命中 {len(articles)} 篇文献")
+                else:
+                    self._update_step(job, idx, "failed", "未命中文献或网络不可用，论文将不带参考文献")
+            except Exception as e:
+                self._update_step(job, idx, "failed", f"文献检索失败：{e}")
+
+            # 3) 顺序执行议题算子（默认参数，失败不中断后续）
+            for i, s in enumerate(topic.get("skills", []), start=2):
                 sid = s.get("id", "")
                 self._update_step(job, i, "running")
                 try:
@@ -461,29 +543,43 @@ class AutoResearchService:
                 except Exception as e:
                     self._update_step(job, i, "failed", f"算子执行失败：{e}")
 
-            # 3) 论文生成（要求至少 1 个成功 result_id）
-            paper_idx = len(job["steps"]) - 1
-            self._update_step(job, paper_idx, "running")
+            # 4) 大纲生成 → 暂停等待用户确认（人在环，借鉴 Co-Scientist scientist-in-the-loop）
+            outline_idx = len(job["steps"]) - 2
+            self._update_step(job, outline_idx, "running")
             with _JOBS_LOCK:
                 result_ids = list(job["result_ids"])
+                articles = list(job.get("articles") or [])
             if not result_ids:
                 raise RuntimeError("所有算子均执行失败，无法生成论文")
-            paper = research_assistant_service.generate_paper(
-                question=topic.get("question", ""),
-                result_ids=result_ids,
-                articles=[],
-                title=topic.get("title") or None,
-            )
-            with _JOBS_LOCK:
-                job["paper"] = paper.get("paper")
-                job["filename"] = paper.get("filename")
-                job["download_url"] = paper.get("download_url")
-            title = (job.get("paper") or {}).get("title", "")
-            self._update_step(job, paper_idx, "done", f"论文已生成：{title}")
-
-            with _JOBS_LOCK:
-                job["state"] = "done"
-                job["finished_at"] = _now()
+            try:
+                ol = research_assistant_service.propose_outline(
+                    question=topic.get("question", ""),
+                    result_ids=result_ids,
+                    title=topic.get("title") or None,
+                )
+                with _JOBS_LOCK:
+                    job["outline"] = ol.get("outline", "")
+                    job["paper_params"] = {
+                        "question": topic.get("question", ""),
+                        "result_ids": result_ids,
+                        "articles": articles,
+                        "title": ol.get("title"),
+                    }
+                    job["state"] = "awaiting_outline"
+                self._update_step(job, outline_idx, "done", "大纲已生成，等待确认或修改后继续")
+                return  # 流水线暂停，由 confirm_outline 唤起论文生成
+            except Exception as e:
+                # 大纲预览失败不阻塞流水线，跳过确认直接生成论文
+                self._update_step(job, outline_idx, "failed",
+                                  f"大纲预览失败，直接继续：{e}")
+                with _JOBS_LOCK:
+                    job["paper_params"] = {
+                        "question": topic.get("question", ""),
+                        "result_ids": result_ids,
+                        "articles": articles,
+                        "title": topic.get("title") or None,
+                    }
+            self._run_paper(job_id)
         except Exception as e:
             with _JOBS_LOCK:
                 job["state"] = "failed"
@@ -495,6 +591,69 @@ class AutoResearchService:
                     self._update_step(job, i, "failed", "流水线中断")
         finally:
             # 终态落盘（内存对象即最终状态，整体序列化）
+            try:
+                json_store.save(job_id, json.loads(json.dumps(job, default=str)))
+            except Exception:
+                pass
+
+    def confirm_outline(self, job_id: str, outline: str) -> dict:
+        """用户确认/修改大纲后，后台线程继续论文生成"""
+        job = self.get_job(job_id)
+        if job is None:
+            raise ValueError(f"任务不存在: {job_id}")
+        if job.get("state") != "awaiting_outline":
+            raise ValueError("任务当前不在等待大纲确认状态")
+        with _JOBS_LOCK:
+            job["outline"] = outline
+            job["state"] = "running"
+        threading.Thread(target=self._run_paper, args=(job_id,), daemon=True).start()
+        return self.get_job(job_id)
+
+    def _run_paper(self, job_id: str):
+        """流水线后半段：按确认的大纲生成论文。捕所有异常，终态落盘。"""
+        job = self.get_job(job_id)
+        if job is None:
+            return
+        try:
+            paper_idx = len(job["steps"]) - 1
+            self._update_step(job, paper_idx, "running")
+            params = job.get("paper_params") or {}
+            paper = research_assistant_service.generate_paper(
+                question=params.get("question", ""),
+                result_ids=params.get("result_ids", []),
+                articles=params.get("articles") or [],
+                title=params.get("title") or None,
+                # 用户留空大纲则回落自动锦标赛生成
+                outline=(job.get("outline") or "").strip() or None,
+            )
+            with _JOBS_LOCK:
+                job["paper"] = paper.get("paper")
+                job["quality_report"] = paper.get("quality_report")
+                job["review"] = paper.get("review")
+                job["filename"] = paper.get("filename")
+                job["download_url"] = paper.get("download_url")
+                job["report_filename"] = paper.get("report_filename")
+                job["report_download_url"] = paper.get("report_download_url")
+            title = (job.get("paper") or {}).get("title", "")
+            suspicious = ((paper.get("quality_report") or {}).get("numbers") or {}
+                          ).get("suspicious_numbers") or []
+            detail = f"论文已生成：{title}"
+            if suspicious:
+                detail += f"（质检提示 {len(suspicious)} 处数字待核对）"
+            self._update_step(job, paper_idx, "done", detail)
+
+            with _JOBS_LOCK:
+                job["state"] = "done"
+                job["finished_at"] = _now()
+        except Exception as e:
+            with _JOBS_LOCK:
+                job["state"] = "failed"
+                job["error"] = str(e)
+                job["finished_at"] = _now()
+            for i, step in enumerate(job["steps"]):
+                if step["state"] in ("running", "pending"):
+                    self._update_step(job, i, "failed", "流水线中断")
+        finally:
             try:
                 json_store.save(job_id, json.loads(json.dumps(job, default=str)))
             except Exception:

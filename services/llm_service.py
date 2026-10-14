@@ -8,6 +8,9 @@ class LLMService:
         self.client = OpenAI(
             api_key=settings.openai_api_key,
             base_url=settings.openai_base_url,
+            # 单次请求超时（默认SDK为600s，显式可配），超时/5xx由SDK自动重试
+            timeout=settings.llm_timeout_seconds,
+            max_retries=2,
         )
         self.model = settings.openai_model
         # 思考模式开关（DeepSeek 推理模型），通过 extra_body 传给 API
@@ -47,6 +50,11 @@ class LLMService:
             if cached is not None:
                 return cached
 
+        # 思考模式开启时，思维链 token 与回答共用 max_tokens，
+        # 小额度容易被思考耗尽导致空内容，统一兜底提升
+        if self.thinking_mode == "enabled" and max_tokens < 1000:
+            max_tokens = 1000
+
         # 调用LLM
         try:
             response = self.client.chat.completions.create(
@@ -69,8 +77,10 @@ class LLMService:
         except Exception as e:
             content = f"[LLM调用失败] {str(e)}"
 
-        # 写入缓存（即使失败也缓存错误信息，避免重复调用失败的请求）
+        # 写入缓存（失败结果只短缓存 0.5 小时：既能压住连续失败的重试洪峰，
+        # 又避免一次超时/抖动被缓存 240 小时后用户长期看到旧错误）
         if use_cache:
+            failed = content.startswith("[LLM调用失败]")
             llm_cache_store.set(
                 namespace=cache_namespace,
                 messages=messages,
@@ -78,7 +88,7 @@ class LLMService:
                 max_tokens=max_tokens,
                 model=self.model,
                 content=content,
-                ttl_hours=cache_ttl_hours,
+                ttl_hours=0.5 if failed else cache_ttl_hours,
                 metadata=cache_metadata,
             )
 

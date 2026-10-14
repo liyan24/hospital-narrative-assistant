@@ -7,6 +7,7 @@ import os
 from typing import Dict, List, Any, Optional
 from database.neo4j_client import Neo4jClient
 from services.kg_data_cleaner import KGDataCleaner
+from services.kg_mysql_loader import KGMysqlLoader
 
 
 class KnowledgeGraphService:
@@ -14,6 +15,7 @@ class KnowledgeGraphService:
         self.client = neo4j_client or Neo4jClient()
         self.batch_size = 5000
         self.cleaner = KGDataCleaner()
+        self.mysql_loader = KGMysqlLoader()
 
     # ==================== Schema Setup ====================
 
@@ -291,9 +293,9 @@ class KnowledgeGraphService:
 
     # ==================== Main Build ====================
 
-    def build_all(self, clear: bool = False, use_cache: bool = True):
+    def build_all(self, clear: bool = False, use_cache: bool = True, source: str = "mysql"):
         print("=" * 60)
-        print("Starting Knowledge Graph Build (Cleaned Data v2)")
+        print(f"Starting Knowledge Graph Build (Cleaned Data v2, source={source})")
         print("=" * 60)
 
         if clear:
@@ -301,8 +303,11 @@ class KnowledgeGraphService:
 
         self.setup_schema()
 
-        # Step 1: 清洗数据
-        data = self.cleaner.run_all(use_cache=use_cache)
+        # Step 1: 清洗数据（mysql: 从 MySQL 业务表加载；excel: 原有 Excel 清洗路径，向后兼容）
+        if source == "mysql":
+            data = self.mysql_loader.run_all()
+        else:
+            data = self.cleaner.run_all(use_cache=use_cache)
         rels = data["relations"]
 
         # Step 2: 导入节点

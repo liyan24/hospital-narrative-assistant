@@ -2,9 +2,11 @@
 """
 知识图谱构建脚本
 用法:
-    python scripts/build_knowledge_graph.py
-    python scripts/build_knowledge_graph.py --clear  # 清空后重建
-    python scripts/build_knowledge_graph.py --test     # 仅测试连接
+    python scripts/build_knowledge_graph.py                       # 默认从 MySQL 构建
+    python scripts/build_knowledge_graph.py --source excel        # 从 Excel 清洗数据构建（旧路径）
+    python scripts/build_knowledge_graph.py --source mysql --clear  # 清空后重建
+    python scripts/build_knowledge_graph.py --test                # 仅测试连接
+    python scripts/build_knowledge_graph.py --stats               # 仅打印图谱统计
 """
 
 import sys
@@ -23,6 +25,8 @@ def main():
     parser.add_argument("--clear", action="store_true", help="Clear existing graph before building")
     parser.add_argument("--test", action="store_true", help="Test Neo4j connection only")
     parser.add_argument("--stats", action="store_true", help="Print graph statistics only")
+    parser.add_argument("--source", choices=["excel", "mysql"], default="mysql",
+                        help="Data source: mysql (default, from MySQL business tables) or excel (legacy Excel cleaning path)")
     args = parser.parse_args()
 
     print("Connecting to Neo4j...")
@@ -46,7 +50,7 @@ def main():
         kg.print_stats()
         return
 
-    kg.build_all(clear=args.clear)
+    kg.build_all(clear=args.clear, source=args.source)
 
 
 if __name__ == "__main__":

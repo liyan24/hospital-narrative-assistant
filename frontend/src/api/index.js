@@ -61,3 +61,4 @@ export const startAutoResearch = (topic) => request.post('/research/auto/start',
 export const getAutoResearchJob = (jobId) => request.get(`/research/auto/${jobId}`)
 export const getAutoResearchHistory = () => request.get('/research/auto/history')
 export const evaluateCustomTopic = (idea) => request.post('/research/auto/topics/custom', { idea }, { timeout: 300000 })
+export const confirmAutoOutline = (jobId, outline) => request.post(`/research/auto/${jobId}/outline`, { outline }, { timeout: 60000 })

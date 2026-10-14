@@ -15,7 +15,7 @@ import {
   getResearchDataAssets, getResearchSkills, runResearchSkill, runResearchCode,
   recommendResearch, interpretResearchResult, searchLiterature, generatePaper,
   proposeResearchTopics, startAutoResearch, getAutoResearchJob,
-  getAutoResearchHistory, evaluateCustomTopic,
+  getAutoResearchHistory, evaluateCustomTopic, confirmAutoOutline,
 } from '../../api/index.js'
 
 const { TextArea } = Input
@@ -27,17 +27,81 @@ result = visits.groupby('department').size().reset_index(name='count')
 `
 
 const PAPER_SECTIONS = [
-  ['abstract', '摘要'],
-  ['introduction', '引言'],
-  ['methods', '方法'],
-  ['results', '结果'],
-  ['discussion', '讨论'],
-  ['conclusion', '结论'],
+  ['摘要', '摘要'],
+  ['前言', '前言'],
+  ['文献综述', '文献综述'],
+  ['资料与方法', '资料与方法'],
+  ['结果', '结果'],
+  ['讨论', '讨论'],
+  ['结论', '结论'],
   ['references', '参考文献'],
 ]
 
 // 智能模式论文 sections 的 key 直接就是中文，按此顺序展示
-const AUTO_PAPER_SECTIONS = ['摘要', '前言', '资料与方法', '结果', '讨论', '结论']
+const AUTO_PAPER_SECTIONS = ['摘要', '前言', '文献综述', '资料与方法', '结果', '讨论', '结论']
+
+// 质检报告与自评审展示（专家模式与智能模式共用）
+function QualityReportCards({ qualityReport, review }) {
+  const suspicious = qualityReport?.numbers?.suspicious_numbers || []
+  const lints = qualityReport?.lints?.lints || []
+  if (!suspicious.length && !lints.length && !review) return null
+
+  const items = [{
+    key: 'numbers',
+    label: suspicious.length
+      ? `数字一致性校验：${suspicious.length} 处待核对`
+      : '数字一致性校验：未发现异常',
+    children: suspicious.length ? (
+      <List
+        size="small"
+        dataSource={suspicious}
+        renderItem={(s) => (
+          <List.Item>
+            <List.Item.Meta
+              title={
+                <Text>
+                  <Tag color="orange">{s.section}</Tag>
+                  数值 <Text strong>{s.value}</Text> 未在分析结果中找到，请人工核对
+                </Text>
+              }
+              description={<Text type="secondary">{s.context}</Text>}
+            />
+          </List.Item>
+        )}
+      />
+    ) : (
+      <Text type="secondary">正文数字与算子结果自动比对未发现明显不符（仅供参考，需人工核对）。</Text>
+    ),
+  }]
+  if (lints.length) {
+    items.push({
+      key: 'lints',
+      label: `写作规范 lint：${lints.length} 条警告`,
+      children: (
+        <List
+          size="small"
+          dataSource={lints}
+          renderItem={(it) => (
+            <List.Item>
+              <Text>
+                <Tag>{it.tool || it.skill}</Tag>
+                {it.code} {it.message || it.location}
+              </Text>
+            </List.Item>
+          )}
+        />
+      ),
+    })
+  }
+  if (review) {
+    items.push({
+      key: 'review',
+      label: 'AI 结构化自评审（供修订参考）',
+      children: <Paragraph style={{ whiteSpace: 'pre-wrap' }}>{review}</Paragraph>,
+    })
+  }
+  return <Collapse style={{ marginBottom: 16 }} items={items} />
+}
 
 const FEASIBILITY_COLORS = { 高: 'green', 中: 'orange', 低: 'red' }
 
@@ -197,6 +261,10 @@ function SmartModePanel() {
   const [startingId, setStartingId] = useState(null) // 正在启动的 topic id
   const [job, setJob] = useState(null)
 
+  // 大纲确认（人在环检查点）
+  const [outlineDraft, setOutlineDraft] = useState('')
+  const [confirmingOutline, setConfirmingOutline] = useState(false)
+
   // 历史研究记录
   const [history, setHistory] = useState(null) // null = 尚未加载
   const [historyLoading, setHistoryLoading] = useState(false)
@@ -223,6 +291,29 @@ function SmartModePanel() {
     }, 3000)
     return () => clearInterval(timer)
   }, [jobId, jobState])
+
+  // 进入大纲确认状态时，用 job 中的大纲初始化编辑器（仅一次，避免轮询覆盖用户编辑）
+  useEffect(() => {
+    if (jobState === 'awaiting_outline') {
+      setOutlineDraft(job?.outline || '')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jobState])
+
+  const handleConfirmOutline = async () => {
+    setConfirmingOutline(true)
+    try {
+      const res = await confirmAutoOutline(jobId, outlineDraft)
+      if (res?.job) {
+        setJob(res.job)
+        message.success('大纲已确认，正在生成论文')
+      }
+    } catch {
+      // 拦截器已统一报错
+    } finally {
+      setConfirmingOutline(false)
+    }
+  }
 
   // 进入智能模式即加载历史研究记录
   const loadHistory = async () => {
@@ -332,6 +423,12 @@ function SmartModePanel() {
   const handleAutoDownload = () => {
     let url = job?.download_url || ''
     if (!url && job?.filename) url = `/research/paper/download/${job.filename}`
+    openDownload(url)
+  }
+
+  const handleReportDownload = () => {
+    let url = job?.report_download_url || ''
+    if (!url && job?.report_filename) url = `/research/paper/download/${job.report_filename}`
     openDownload(url)
   }
 
@@ -564,6 +661,48 @@ function SmartModePanel() {
     </Card>
   )
 
+  // ---------- 阶段 2.5：大纲确认（人在环检查点） ----------
+  const renderOutlineConfirm = () => (
+    <>
+      <Alert
+        type="warning"
+        showIcon
+        style={{ marginBottom: 16 }}
+        message="分析已完成，请确认论文大纲"
+        description="以下是 AI 基于分析结果拟定的论文大纲。您可以直接确认，或修改后再生成论文；清空内容则由 AI 自动生成大纲。"
+      />
+      <Card title={`论文大纲：${job.topic?.title || '自动研究'}`} style={{ marginBottom: 16 }}>
+        <TextArea
+          value={outlineDraft}
+          onChange={(e) => setOutlineDraft(e.target.value)}
+          rows={16}
+          placeholder="大纲内容（清空则由 AI 自动生成）"
+        />
+        <Space style={{ marginTop: 12 }}>
+          <Button type="primary" loading={confirmingOutline} onClick={handleConfirmOutline}>
+            确认大纲并生成论文
+          </Button>
+          <Button icon={<RedoOutlined />} onClick={handleRestart}>
+            放弃本次研究
+          </Button>
+        </Space>
+      </Card>
+      <Card title="已完成的分析步骤" size="small">
+        <Steps
+          direction="vertical"
+          size="small"
+          current={job.current_step ?? 0}
+          items={(job.steps || []).map((s) => ({
+            title: s.label,
+            status: STEP_STATUS[s.state] || 'wait',
+            icon: STEP_ICONS[s.state],
+            description: s.state === 'running' ? '进行中' : s.detail,
+          }))}
+        />
+      </Card>
+    </>
+  )
+
   // ---------- 阶段 3：论文展示 ----------
   const renderPaperResult = () => {
     const sections = job.paper?.sections || {}
@@ -581,14 +720,23 @@ function SmartModePanel() {
         <Card
           title={job.paper?.title || '生成的论文'}
           extra={
-            <Button
-              type="primary"
-              icon={<DownloadOutlined />}
-              disabled={!job.download_url && !job.filename}
-              onClick={handleAutoDownload}
-            >
-              下载 Word 文档
-            </Button>
+            <Space>
+              <Button
+                icon={<DownloadOutlined />}
+                disabled={!job.report_download_url && !job.report_filename}
+                onClick={handleReportDownload}
+              >
+                下载质检报告
+              </Button>
+              <Button
+                type="primary"
+                icon={<DownloadOutlined />}
+                disabled={!job.download_url && !job.filename}
+                onClick={handleAutoDownload}
+              >
+                下载 Word 文档
+              </Button>
+            </Space>
           }
           style={{ marginBottom: 16 }}
         >
@@ -607,6 +755,7 @@ function SmartModePanel() {
             </Typography>
           </div>
         </Card>
+        <QualityReportCards qualityReport={job.quality_report} review={job.review} />
         <Collapse
           items={[{
             key: 'steps',
@@ -650,6 +799,7 @@ function SmartModePanel() {
   }
 
   if (!job) return renderTopics()
+  if (jobState === 'awaiting_outline') return renderOutlineConfirm()
   if (jobState === 'done') return renderPaperResult()
   return renderRunning()
 }
@@ -689,6 +839,8 @@ function ExpertModePanel() {
   const [generating, setGenerating] = useState(false)
   const [paper, setPaper] = useState(null)
   const [paperFile, setPaperFile] = useState(null)
+  const [paperQuality, setPaperQuality] = useState(null)
+  const [paperReview, setPaperReview] = useState('')
 
   const loadAssets = async () => {
     setAssetsLoading(true)
@@ -797,7 +949,7 @@ function ExpertModePanel() {
     }
     setSearching(true)
     try {
-      const res = await searchLiterature({ query: litQuery, max_results: 10 })
+      const res = await searchLiterature({ query: litQuery, max_results: 20 })
       if (res) {
         setArticles(res.articles || [])
         setLitSummary(res.summary || '')
@@ -826,7 +978,12 @@ function ExpertModePanel() {
       })
       if (res?.paper) {
         setPaper(res.paper)
-        setPaperFile({ filename: res.filename, download_url: res.download_url })
+        setPaperFile({
+          filename: res.filename, download_url: res.download_url,
+          report_filename: res.report_filename, report_download_url: res.report_download_url,
+        })
+        setPaperQuality(res.quality_report || null)
+        setPaperReview(res.review || '')
         message.success('论文生成完成')
       }
     } catch {
@@ -840,6 +997,14 @@ function ExpertModePanel() {
     if (!paperFile) return
     let url = paperFile.download_url || ''
     if (!url && paperFile.filename) url = `/research/paper/download/${paperFile.filename}`
+    if (url && !url.startsWith('/api')) url = `/api${url.startsWith('/') ? '' : '/'}${url}`
+    if (url) window.open(url, '_blank')
+  }
+
+  const handleReportDownloadExpert = () => {
+    if (!paperFile) return
+    let url = paperFile.report_download_url || ''
+    if (!url && paperFile.report_filename) url = `/research/paper/download/${paperFile.report_filename}`
     if (url && !url.startsWith('/api')) url = `/api${url.startsWith('/') ? '' : '/'}${url}`
     if (url) window.open(url, '_blank')
   }
@@ -1134,9 +1299,18 @@ function ExpertModePanel() {
           <Card
             title={paper.title || '生成的论文'}
             extra={
-              <Button type="primary" icon={<DownloadOutlined />} onClick={handleDownload}>
-                下载 Word 文档
-              </Button>
+              <Space>
+                <Button
+                  icon={<DownloadOutlined />}
+                  disabled={!paperFile?.report_download_url && !paperFile?.report_filename}
+                  onClick={handleReportDownloadExpert}
+                >
+                  下载质检报告
+                </Button>
+                <Button type="primary" icon={<DownloadOutlined />} onClick={handleDownload}>
+                  下载 Word 文档
+                </Button>
+              </Space>
             }
           >
             <div style={{ maxHeight: 600, overflow: 'auto' }}>
@@ -1152,6 +1326,9 @@ function ExpertModePanel() {
               </Typography>
             </div>
           </Card>
+          <div style={{ marginTop: 16 }}>
+            <QualityReportCards qualityReport={paperQuality} review={paperReview} />
+          </div>
         </Col>
       )}
     </Row>

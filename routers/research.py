@@ -7,6 +7,7 @@ from models.schemas import (
     ResearchRecommendRequest, ResearchInterpretRequest,
     LiteratureSearchRequest, PaperGenerateRequest,
     AutoResearchStartRequest, AutoTopicsRequest, AutoCustomTopicRequest,
+    OutlineConfirmRequest,
 )
 from services.research.auto_research_service import auto_research_service
 from services.research.dataset_service import dataset_service
@@ -162,25 +163,45 @@ async def start_auto_pipeline(request: AutoResearchStartRequest) -> dict:
     return {"status": "ok", "job_id": auto_research_service.start_pipeline(request.topic)}
 
 
-@router.get("/auto/{job_id}")
-async def get_auto_job(job_id: str) -> dict:
-    """查询流水线任务状态（current_step 为当前 running 步骤下标，无则 -1）"""
-    job = auto_research_service.get_job(job_id)
-    if job is None:
-        raise HTTPException(status_code=404, detail="任务不存在")
+def _job_view(job: dict) -> dict:
+    """流水线任务的前端视图（current_step 为当前 running 步骤下标，无则 -1）"""
     current_step = next(
         (i for i, s in enumerate(job.get("steps", [])) if s.get("state") == "running"), -1)
-    return {"status": "ok", "job": {
+    return {
         "job_id": job.get("job_id"),
         "state": job.get("state"),
         "current_step": current_step,
         "steps": job.get("steps", []),
         "topic": job.get("topic"),
         "result_ids": job.get("result_ids", []),
+        "outline": job.get("outline"),
         "paper": job.get("paper"),
+        "quality_report": job.get("quality_report"),
+        "review": job.get("review"),
         "filename": job.get("filename"),
         "download_url": job.get("download_url"),
+        "report_filename": job.get("report_filename"),
+        "report_download_url": job.get("report_download_url"),
         "error": job.get("error"),
         "created_at": job.get("created_at"),
         "finished_at": job.get("finished_at"),
-    }}
+    }
+
+
+@router.get("/auto/{job_id}")
+async def get_auto_job(job_id: str) -> dict:
+    """查询流水线任务状态"""
+    job = auto_research_service.get_job(job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="任务不存在")
+    return {"status": "ok", "job": _job_view(job)}
+
+
+@router.post("/auto/{job_id}/outline")
+async def confirm_auto_outline(job_id: str, request: OutlineConfirmRequest) -> dict:
+    """确认或修改大纲后继续论文生成（人在环检查点）"""
+    try:
+        job = auto_research_service.confirm_outline(job_id, request.outline)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return {"status": "ok", "job": _job_view(job)}

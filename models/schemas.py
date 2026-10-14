@@ -247,3 +247,7 @@ class AutoTopicsRequest(BaseModel):
 
 class AutoCustomTopicRequest(BaseModel):
     idea: str
+
+
+class OutlineConfirmRequest(BaseModel):
+    outline: str = ""

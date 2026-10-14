@@ -12,6 +12,9 @@ class Settings(BaseSettings):
     # 思考模式下 temperature 等采样参数不生效，且思维链 token 与回答共用 max_tokens
     thinking_mode: str = "enabled"
 
+    # 单次 LLM 请求超时（秒）；超时/5xx 由 SDK 自动重试 2 次
+    llm_timeout_seconds: int = 300
+
     # MySQL
     mysql_host: str = "localhost"
     mysql_port: int = 3306
